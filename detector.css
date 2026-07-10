@@ -1,0 +1,288 @@
+#planetHUD {
+  position: fixed;
+  left: 0;
+  top: 0;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  transition:
+    stroke 0.4s,
+    color 0.4s,
+    background 0.4s,
+    box-shadow 0.4s,
+    filter 0.4s;
+}
+.connector {
+  transform-origin: center;
+}
+.connectorGlow {
+  fill: none;
+
+  stroke: var(--primary);
+
+  stroke-width: 10;
+
+  opacity: 1;
+}
+
+.connectorPath {
+  fill: none;
+
+  stroke: var(--white);
+
+  stroke-width: 2.5;
+}
+.planetLabel {
+  position: absolute;
+
+  display: flex;
+  flex-direction: column;
+
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.planetLabel.left {
+  align-items: flex-start;
+}
+
+.planetLabel.right {
+  align-items: flex-end;
+}
+
+.labelTitle {
+  color: var(--primary);
+  font-size: 22px;
+  font-family: Orbitron, sans-serif;
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.labelDot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--primary);
+  box-shadow:
+    0 0 6px var(--primary),
+    0 0 15px var(--primary);
+}
+.labelLine {
+  width: 170px;
+  height: 2px;
+  background: var(--primary);
+  box-shadow: 0 0 8px var(--primary);
+}
+.connector path {
+  fill: none;
+  stroke: var(--primary);
+  stroke-width: 2;
+}
+/* ===========================
+   BLUE RINGS
+=========================== */
+
+#outerCircle {
+  fill: none;
+  stroke: var(--primary);
+  stroke-width: 4;
+  stroke-linecap: round;
+  stroke-dasharray: 1571;
+  stroke-dashoffset: 1571;
+  opacity: 0;
+}
+
+#innerCircle {
+  fill: none;
+  stroke: var(--primary);
+  stroke-width: 4;
+  stroke-linecap: round;
+  stroke-dasharray: 1256;
+  stroke-dashoffset: 1256;
+  opacity: 0;
+}
+
+/* ===========================
+   CENTER RINGS
+=========================== */
+
+.centerCircle {
+  fill: none;
+  stroke: var(--primary);
+  stroke-width: 4;
+  stroke-dasharray: 942;
+  stroke-dashoffset: 942;
+  opacity: 0;
+}
+
+.centerCircleThin {
+  fill: none;
+  stroke: var(--primary);
+  stroke-width: 2;
+  stroke-dasharray: 910;
+  stroke-dashoffset: 910;
+  opacity: 0;
+}
+
+/* ===========================
+   LARGE WHITE SEGMENTS
+=========================== */
+
+.segment {
+  fill: none;
+  stroke: var(--white);
+  stroke-width: 18;
+  stroke-linecap: round;
+  opacity: 0;
+  stroke-dasharray: 350;
+  stroke-dashoffset: 350;
+}
+
+/* ===========================
+   SMALL WHITE SEGMENTS
+=========================== */
+
+.smallSegment {
+  fill: none;
+  stroke: var(--white);
+  stroke-width: 12;
+  stroke-linecap: round;
+  opacity: 0;
+  stroke-dasharray: 260;
+  stroke-dashoffset: 260;
+}
+
+/* ===========================
+   ROTATION GROUPS
+=========================== */
+
+#outerRing {
+  transform-origin: 400px 400px;
+}
+
+#segmentRing {
+  transform-origin: 400px 400px;
+}
+
+#innerRing {
+  transform-origin: 400px 400px;
+}
+
+#innerSegments {
+  transform-origin: 400px 400px;
+}
+
+#centerRing {
+  transform-origin: 400px 400px;
+}
+
+/* ===========================
+   GLOW
+=========================== */
+
+#outerCircle,
+#innerCircle,
+.centerCircle,
+.centerCircleThin {
+  filter: drop-shadow(0 0 6px var(--primary))
+    drop-shadow(0 0 15px var(--primary)) drop-shadow(0 0 25px var(--primary));
+}
+
+/* ===========================
+   ANIMATIONS
+=========================== */
+
+.draw {
+  animation: drawRing 1.2s ease forwards;
+}
+
+.fillArc {
+  animation: fillArc 0.8s ease forwards;
+}
+
+.rotateCW {
+  animation: rotateCW 14s linear infinite;
+}
+
+.rotateCCW {
+  animation: rotateCCW 10s linear infinite;
+}
+
+.scan {
+  animation: scannerSpin 2.5s linear infinite;
+}
+
+/* ===========================
+   KEYFRAMES
+=========================== */
+
+@keyframes drawRing {
+  from {
+    opacity: 1;
+    stroke-dashoffset: 1571;
+  }
+
+  to {
+    opacity: 1;
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes fillArc {
+  from {
+    opacity: 1;
+    stroke-dashoffset: 350;
+  }
+
+  to {
+    opacity: 1;
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes rotateCW {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes rotateCCW {
+  from {
+    transform: rotate(360deg);
+  }
+
+  to {
+    transform: rotate(0deg);
+  }
+}
+
+/* ===========================
+   PULSE
+=========================== */
+
+@keyframes pulse {
+  0% {
+    filter: drop-shadow(0 0 5px var(--primary));
+  }
+
+  50% {
+    filter: drop-shadow(0 0 20px var(--primary))
+      drop-shadow(0 0 40px var(--primary));
+  }
+
+  100% {
+    filter: drop-shadow(0 0 5px var(--primary));
+  }
+}
+
+#outerCircle,
+#innerCircle,
+.centerCircle {
+  animation: pulse 3s ease-in-out infinite;
+}

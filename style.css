@@ -1,0 +1,16 @@
+body {
+  margin: 0;
+  overflow: hidden;
+  background: black;
+}
+#planetHUD {
+  position: fixed;
+  width: 260px;
+  height: 260px;
+  left: 0;
+  top: 0;
+  transform: translate(-50%, -50%);
+  opacity: 0;
+  transition: 0.2s;
+  z-index: 200;
+}

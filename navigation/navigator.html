@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+
+    <title>Navigator Test</title>
+
+    <link rel="stylesheet" href="navigation.css" />
+  </head>
+
+  <body>
+    <div id="navigatorHUD">
+      <div id="navigatorConnector">
+        <svg id="navigatorSVG" viewBox="0 0 900 180">
+          <path
+            id="connectorPath"
+            d="M20 145
+                   L250 145
+                   L320 80
+                   L870 80"
+          />
+
+          <path
+            id="connectorGlow"
+            d="M20 145
+                   L250 145
+                   L320 80
+                   L870 80"
+          />
+        </svg>
+      </div>
+
+      <div id="navigatorLabels">
+        <div class="header">
+          <span>CONTACT</span>
+          <span>NAVIGATOR</span>
+        </div>
+
+        <div class="menu">
+          <div class="navItem active">HOME</div>
+          <div class="navItem">ABOUT</div>
+          <div class="navItem">PROJECTS</div>
+          <div class="navItem">SKILLS</div>
+        </div>
+      </div>
+    </div>
+
+    <script src="navigator.js"></script>
+  </body>
+</html>
