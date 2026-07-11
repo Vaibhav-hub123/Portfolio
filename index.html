@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="style.css" />
     <link rel="stylesheet" href="overlay.css" />
     <link rel="stylesheet" href="detector.css" />
-
+    <link rel="stylesheet" href="UI/infoPanel.css">
     <link rel="stylesheet" href="navigation/navigation.css" />
     <script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/gsap.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -176,6 +176,14 @@
           <div class="themePreview red"></div>
           <span>Mars</span>
         </div>
+      </div>
+
+      <div id= "infoPanel" class="info-panel">
+        <div class="info-panel-header">
+          <span  class="info-panel-title">Title</span>
+          <button class="info-panel-close" aria-label="Close">&times;</button>
+        </div>
+        <div class="info-panel-body"></div>
       </div>
 
       <div class="top-bar">
@@ -413,10 +421,6 @@
         <div class="radar">
           <div class="sweep"></div>
           <svg class="radarDots" viewBox="0 0 200 200">
-            <!-- <circle class="scannerDots" cx="80" cy="60" r="4" />
-
-            <circle class="scannerDots" cx="120" cy="30" r="4" />
-             <circle class="scannerDots" cx="140" cy="150" r="4" /> -->
           </svg>
         </div>
 

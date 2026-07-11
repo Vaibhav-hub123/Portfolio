@@ -1,4 +1,5 @@
 #navigatorHUD {
+  pointer-events: auto;
   position: fixed;
 
   left: 375px;

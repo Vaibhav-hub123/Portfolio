@@ -3,32 +3,28 @@
   inset: 0;
   overflow: hidden;
   z-index: 100;
+  pointer-events: none;   
 }
 
 :root {
   --primary: #00d8ff;
   --secondary: #0077ff;
-
   --white: #ffffff;
-
   --glass: rgba(0, 120, 255, 0.08);
-
   --border: rgba(0, 221, 255, 0.35);
-
   --panel-left: rgba(0, 80, 180, 0.25);
   --panel-middle: rgba(0, 150, 255, 0.1);
   --panel-right: rgba(0, 80, 180, 0.25);
-
   --glow-soft: rgba(0, 221, 255, 0.35);
   --glow-medium: rgba(0, 221, 255, 0.6);
   --glow-strong: rgba(0, 221, 255, 0.7);
-
   --blue-soft: rgba(0, 119, 255, 0.25);
   --blue-medium: rgba(0, 119, 255, 0.3);
   --blue-strong: rgba(0, 119, 255, 0.45);
 }
 
 .top-bar {
+  pointer-events: auto;
   position: absolute;
   top: 75px;
   left: 50%;
@@ -191,55 +187,33 @@
   position: absolute;
   z-index: 1000;
   top: 130px;
-
   right: 8%;
-
   width: 260px;
-
   padding: 20px;
-
   border-radius: 20px;
-
   background: rgba(20, 30, 50, 0.18);
-
   backdrop-filter: blur(18px);
-
   border: 1px solid var(--border);
-
   box-shadow: 0 0 20px var(--glow-soft);
-
   opacity: 0;
-
   pointer-events: none;
-
   transform: translateY(-20px);
-
   transition: 0.35s;
 }
 #themePanel.open {
   opacity: 1;
-
   pointer-events: auto;
-
   transform: translateY(0);
 }
 .themeCard {
   display: flex;
-
   align-items: center;
-
   gap: 15px;
-
   margin-top: 14px;
-
   padding: 12px;
-
   border-radius: 14px;
-
   cursor: pointer;
-
   transition: 0.25s;
-
   background: rgba(255, 255, 255, 0.03);
 }
 .themeCard:hover {
@@ -247,31 +221,27 @@
 }
 .themePreview {
   width: 26px;
-
   height: 26px;
-
   border-radius: 50%;
 }
 .blue {
   background: #00d8ff;
-
   box-shadow: 0 0 15px #00d8ff;
 }
 
 .green {
   background: #00ff99;
-
   box-shadow: 0 0 15px #00ff99;
 }
 
 .red {
   background: #ff5555;
-
   box-shadow: 0 0 15px #ff5555;
 }
 
 /* Robot Container */
 #robotAssistant {
+  pointer-events: auto;
   position: fixed;
   left: 160px;
   bottom: 20px;
@@ -305,6 +275,7 @@
 }
 
 .scanner {
+  pointer-events: auto;
   position: absolute;
   right: 230px;
   bottom: 62px;

@@ -15,9 +15,10 @@ import { initHUD } from "./world/HUD.js";
 import { applyTheme } from "./Theme/themeManager.js";
 import { createNebulas, updateNebulas } from "./world/nebulas.js";
 import { initRadarPlanets, updateRadarPlanets } from "./scanner/scanner.js";
+import { initInfoPanel } from "./world/infoPanel.js";   // ADD
 
 initHUD();
-
+initInfoPanel();
 const scene = new THREE.Scene();
 
 const smallStars = createStars(scene, 10000, 0.7, 1.3, 0xffffff);
@@ -93,7 +94,7 @@ initRadarPlanets(planetData);
 const planets = [];
 planetData.forEach((data) => {
   createPlanet(scene, data.model, data.size, ...data.position, (planet) => {
-    planet.userData = data;
+    Object.assign(planet.userData, data);
 
     planets.push(planet);
 
