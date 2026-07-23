@@ -1,4 +1,6 @@
-// ---------- Setup ----------
+
+
+
 const navItems = document.querySelectorAll(".navItem");
 const navigatorButton = document.getElementById("navigatorButton");
 const menu = document.querySelector(".menu");
@@ -12,7 +14,6 @@ const pathLength = pulsePath.getTotalLength();
 const maskLength = maskPath.getTotalLength();
 
 const pulseStops = [320, 500, 690, pathLength];
-// Distances along the path where each decorative group should switch on/off
 const groupThresholds = [315, 620, 820];
 
 const dashGroups = [
@@ -60,6 +61,9 @@ requestAnimationFrame(() => {
 
 // ---------- Open / close ----------
 navigatorButton.addEventListener("click", () => {
+  if (!navigatorOpen) {
+    window.dispatchEvent(new CustomEvent("navigatorButtonClicked"));
+  }
   navigatorOpen ? closeNavigator() : openNavigator();
 });
 
@@ -105,12 +109,15 @@ function closeNavigator() {
   });
 }
 
-// ---------- Main beam/pulse animation ----------
 function playPulse(index) {
+  if (index < 0) return;
   cancelAnimationFrame(pulseAnimationId);
 
   const targetDistance = pulseStops[index];
-  if (Math.abs(targetDistance - currentDistance) < 2) return;
+  if (Math.abs(targetDistance - currentDistance) < 2) {
+    showMenu();
+    return;
+  }
 
   const direction = Math.sign(targetDistance - currentDistance);
   const menuTrigger = currentDistance + (targetDistance - currentDistance) * 0.75;
@@ -144,7 +151,6 @@ function playPulse(index) {
       return;
     }
 
-    // Snap exactly to target and finish
     currentDistance = targetDistance;
     updatePulsePosition(targetDistance);
     maskPath.style.strokeDashoffset = maskLength - targetDistance;
@@ -196,8 +202,6 @@ function updatePulsePosition(distance) {
   pulse.setAttribute("cy", point.y);
 }
 
-// Turn decorative groups on/off as the pulse crosses each threshold,
-// in whichever direction it's currently travelling.
 function updateGroupsForCrossing(prev, next, direction) {
   groupThresholds.forEach((threshold, groupIndex) => {
     if (direction > 0 && prev < threshold && next >= threshold) {
@@ -226,9 +230,9 @@ function showMenu() {
   });
 }
 
-// ---------- Ambient "flow" dot along the revealed beam ----------
-const GLOW_PAUSE_MS = 350; // how long the dot stays paused/invisible, matches dashEnergy duration
-const RESUME_JUMP = 40; // <-- tweak this to change how far ahead the dot resumes after pausing
+
+const GLOW_PAUSE_MS = 350; 
+const RESUME_JUMP = 40; 
 let flowPauseTimeout = null;
 
 function startFlow() {
@@ -298,7 +302,7 @@ function stopFlow() {
   flowPulse.setAttribute("transform", "translate(0,0)");
 }
 
-// ---------- Decorative dash groups ----------
+
 function energizeGroup(index) {
   const group = dashGroups[index];
   if (!group) return;
@@ -322,4 +326,32 @@ function powerOffGroup(index) {
 
 function resetDashes() {
   document.querySelectorAll(".dash").forEach((dash) => dash.classList.remove("active"));
+}
+
+export function onPlanet(planetName, state) {
+  if (state) {
+    const index = planetNames.indexOf(planetName);
+    if (index === -1) return;
+
+    navItems.forEach((item, i) => item.classList.toggle("active", i === index));
+
+    // Snap instantly — the camera already made the trip, no need to re-animate
+    currentDistance = pulseStops[index];
+    updatePulsePosition(currentDistance);
+    maskPath.style.transition = "none";
+    maskPath.style.strokeDashoffset = maskLength - currentDistance;
+    pulse.style.opacity = 0;
+
+    resetDashes();
+    groupThresholds.forEach((threshold, i) => {
+      if (currentDistance >= threshold) powerOnGroup(i);
+    });
+  } else {
+    navItems.forEach((item) => item.classList.remove("active"));
+    currentDistance = 0;
+    pulse.style.opacity = 0;
+    maskPath.style.transition = "none";
+    maskPath.style.strokeDashoffset = maskLength;
+    resetDashes();
+  }
 }

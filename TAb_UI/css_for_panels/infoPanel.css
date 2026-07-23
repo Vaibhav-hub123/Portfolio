@@ -5,9 +5,9 @@
     left:10%;
     top:10%;
 
-    width:70vw;
-    height:70vh;
-
+    width:65vw;
+    height:53vh;
+    top :150px;
     opacity:0;
     visibility:hidden;
     pointer-events:none;
@@ -15,6 +15,7 @@
     transition:
         opacity .25s,
         transform .25s;
+    z-index: 1000000;
 }
 .info-panel.open{
 
@@ -59,8 +60,13 @@
     padding:30px;
 
     font-size:18px;
-
+    color: aqua;
     line-height:1.8;
+    background-color: rgba(0, 0, 0, 0.247);
+    box-shadow: 0 4px 30px rgba(211, 211, 211, 0.1);
+    backdrop-filter: blur(12.4px);
+    -webkit-backdrop-filter: blur(6.4px);
+    
 }
 .info-panel-close{
 

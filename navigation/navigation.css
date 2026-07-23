@@ -1,19 +1,15 @@
 #navigatorHUD {
   pointer-events: auto;
   position: fixed;
-
   left: 375px;
   bottom: 40px;
-
   width: 750px;
   height: 180px;
-
   z-index: 1000;
 }
 
 #navigatorConnector {
   position: absolute;
-
   inset: 0;
 }
 
@@ -24,28 +20,19 @@
 
 #navigatorLabels {
   position: absolute;
-
   inset: 0;
 }
 
 .header {
   position: absolute;
-
   left: 280px;
-
   top: 50px;
-
   display: flex;
-
   gap: 140px;
-
   color: var(--primary);
-
   letter-spacing: 6px;
-
   font-size: 14px;
   font-family: Orbitron, sans-serif;
-
   text-shadow: 0 0 8px var(--glow-soft);
 }
 .header span {
@@ -54,37 +41,23 @@
 
 .menu {
   position: absolute;
-
   left: 260px;
-
   top: 105px;
-
   display: flex;
-
   gap: 55px;
-
   pointer-events: none;
 }
 
 .navItem {
   pointer-events: auto;
-
   cursor: pointer;
-
   color: var(--primary);
-
   letter-spacing: 4px;
-
   font-size: 15px;
-
   font-family: Orbitron, sans-serif;
-
   opacity: 0;
-
   transform: translateY(10px);
-
   text-shadow: 0 0 6px var(--glow-soft);
-
   transition:
     opacity 0.35s,
     transform 0.25s,
@@ -93,25 +66,19 @@
 }
 .navItem:hover {
   color: var(--white);
-
   transform: translateY(-3px);
-
   text-shadow:
     0 0 10px var(--glow-medium),
     0 0 22px var(--glow-soft);
 }
 .navItem.active {
   color: var(--white);
-
   text-shadow:
     0 0 10px var(--glow-strong),
     0 0 26px var(--glow-medium),
     0 0 44px var(--glow-soft);
 }
 
-/* ========================= */
-/* Connector base lines      */
-/* ========================= */
 
 #connector path {
   fill: none;
@@ -124,15 +91,10 @@
 }
 #connector path.active {
   opacity: 1;
-
   filter: drop-shadow(0 0 6px var(--glow-strong))
     drop-shadow(0 0 16px var(--glow-medium))
     drop-shadow(0 0 32px var(--glow-medium));
 }
-
-/* ========================= */
-/* Beam glow layers          */
-/* ========================= */
 
 #connectorGlow path {
   fill: none;
@@ -146,37 +108,23 @@
 
 #connectorGlow2 path {
   fill: none;
-
   stroke: url(#beamGradient);
-
   stroke-width: 7;
-
   opacity: 0.65;
-
   filter: blur(2px) drop-shadow(0 0 10px var(--glow-strong));
-
   stroke-linecap: round;
   stroke-linejoin: round;
 }
 
 #connectorCore path {
   fill: none;
-
   stroke: var(--white);
-
   stroke-width: 2.4;
-
   opacity: 0.9;
-
   filter: drop-shadow(0 0 6px var(--glow-soft));
-
   stroke-linecap: round;
   stroke-linejoin: round;
 }
-
-/* ========================= */
-/* Decorative dash groups    */
-/* ========================= */
 
 #decorGroup1 line,
 #decorGroup2 line,
@@ -184,11 +132,8 @@
   stroke: var(--primary);
   stroke-width: 2.5;
   stroke-linecap: round;
-
   opacity: 0.8;
-
   filter: drop-shadow(0 0 4px var(--glow-soft));
-
   transition:
     opacity 0.25s,
     filter 0.25s,
@@ -197,31 +142,24 @@
 
 .decorActive line {
   opacity: 1;
-
   stroke: var(--white);
-
   filter: drop-shadow(0 0 6px var(--white))
     drop-shadow(0 0 16px var(--glow-strong))
     drop-shadow(0 0 34px var(--primary))
     drop-shadow(0 0 54px var(--glow-strong));
-
   animation: dashFlash 0.45s ease forwards;
 }
 
 @keyframes dashFlash {
   0% {
     opacity: 0.8;
-
     stroke: var(--primary);
-
     filter: drop-shadow(0 0 4px var(--glow-soft));
   }
 
   30% {
     opacity: 1;
-
     stroke: var(--white);
-
     filter: drop-shadow(0 0 8px var(--white))
       drop-shadow(0 0 20px var(--glow-strong))
       drop-shadow(0 0 38px var(--primary));
@@ -229,9 +167,7 @@
 
   100% {
     opacity: 1;
-
     stroke: var(--white);
-
     filter: drop-shadow(0 0 6px var(--glow-medium))
       drop-shadow(0 0 20px var(--glow-strong));
   }
@@ -240,12 +176,10 @@
 .dash {
   stroke: var(--primary);
   stroke-width: 2.5;
-  
 }
 
 .dash.active {
   stroke: var(--white);
-
   filter: drop-shadow(0 0 6px var(--white))
     drop-shadow(0 0 16px var(--glow-strong))
     drop-shadow(0 0 36px var(--primary))
@@ -255,17 +189,13 @@
 @keyframes dashEnergy {
   0% {
     stroke: var(--primary);
-
     opacity: 0.85;
-
     filter: drop-shadow(0 0 4px var(--glow-soft));
   }
 
   50% {
     stroke: var(--white);
-
     opacity: 1;
-
     filter: drop-shadow(0 0 8px var(--white))
       drop-shadow(0 0 18px var(--glow-strong))
       drop-shadow(0 0 36px var(--primary))
@@ -274,59 +204,41 @@
 
   100% {
     stroke: var(--primary);
-
     opacity: 0.85;
-
     filter: drop-shadow(0 0 4px var(--glow-soft));
   }
 }
-
-/* ========================= */
-/* Terminal node              */
-/* ========================= */
 
 #terminalOuter {
   fill: none;
   stroke: var(--primary);
   stroke-width: 2;
-
   filter: drop-shadow(0 0 8px var(--glow-medium));
 }
 
 #terminalInner {
   fill: var(--white);
-
   filter: drop-shadow(0 0 10px var(--glow-strong));
 }
 
-/* ========================= */
-/* Traveling pulses           */
-/* ========================= */
-
 #energyPulse {
   fill: var(--white);
-
   filter: drop-shadow(0 0 8px var(--white))
     drop-shadow(0 0 18px var(--glow-strong))
     drop-shadow(0 0 34px var(--primary))
     drop-shadow(0 0 56px var(--glow-strong));
-
   opacity: 0;
 }
 
 #flowPulse {
   stroke: var(--white);
   stroke-width: 3.5;
-
   stroke-linecap: round;
-
   opacity: 0;
-
   filter: drop-shadow(0 0 6px var(--white))
     drop-shadow(0 0 16px var(--glow-strong))
     drop-shadow(0 0 30px var(--primary))
     drop-shadow(0 0 60px var(--glow-strong));
-
   animation: flowPulseGlow 0.8s ease-in-out infinite;
 }
 
@@ -339,7 +251,6 @@
   0%,
   100% {
     opacity: 0.75;
-
     filter: drop-shadow(0 0 5px var(--white))
       drop-shadow(0 0 12px var(--glow-medium))
       drop-shadow(0 0 24px var(--primary))
@@ -348,7 +259,6 @@
 
   50% {
     opacity: 1;
-
     filter: drop-shadow(0 0 8px var(--white))
       drop-shadow(0 0 20px var(--glow-strong))
       drop-shadow(0 0 40px var(--primary))
@@ -359,13 +269,11 @@
 @keyframes terminalFlash {
   0% {
     transform: scale(1);
-
     filter: drop-shadow(0 0 4px var(--white));
   }
 
   50% {
     transform: scale(1.6);
-
     filter: drop-shadow(0 0 10px var(--white))
       drop-shadow(0 0 24px var(--glow-strong))
       drop-shadow(0 0 44px var(--primary));
@@ -373,7 +281,6 @@
 
   100% {
     transform: scale(1);
-
     filter: drop-shadow(0 0 4px var(--glow-soft));
   }
 }

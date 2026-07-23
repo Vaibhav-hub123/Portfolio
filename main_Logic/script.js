@@ -1,7 +1,7 @@
 import * as THREE from "three";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
-import { createStars } from "./world/stars.js";
-import { createPlanet } from "./world/planets.js";
+import { createStars } from "../world/stars.js";
+import { createPlanet } from "../world/planets.js";
 import {
   setupInteractions,
   registerPlanet,
@@ -10,12 +10,12 @@ import {
   cancelFocus,
   isFocusing,
   
-} from "./world/interactions.js";
-import { initHUD } from "./world/HUD.js";
-import { applyTheme } from "./Theme/themeManager.js";
-import { createNebulas, updateNebulas } from "./world/nebulas.js";
-import { initRadarPlanets, updateRadarPlanets } from "./scanner/scanner.js";
-import { initInfoPanel } from "./world/infoPanel.js";   // ADD
+} from "./interactions.js";
+import { initHUD } from "../world/HUD.js";
+import { applyTheme } from "../Theme/themeManager.js";
+import { createNebulas, updateNebulas } from "../world/nebulas.js";
+import { initRadarPlanets, updateRadarPlanets } from "../scanner/scanner.js";
+import { initInfoPanel } from "../TAb_UI/logic/infoPanel.js";   // ADD
 
 initHUD();
 initInfoPanel();

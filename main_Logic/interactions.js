@@ -1,11 +1,13 @@
 import * as THREE from "three";
-import { showHUD, hideHUD, playHUDAnimation } from "./HUD.js";
-import { openInfoPanel, hideInfoPanel } from "./infoPanel.js";
+import { showHUD, hideHUD, playHUDAnimation } from "../world/HUD.js";
+import { openInfoPanel, hideInfoPanel } from "../TAb_UI/logic/infoPanel.js";
+import { onPlanet } from "../navigation/navigation.js";
 
 const raycaster = new THREE.Raycaster();
 const mouse = new THREE.Vector2();
 const clickMouse = new THREE.Vector2();
-
+const returnPos = new THREE.Vector3();
+const returnQuat = new THREE.Quaternion();
 const clickableObjects = [];
 
 let currentPlanet = null;
@@ -49,16 +51,28 @@ export function registerPlanet(planet) {
 export function setupInteractions(camera, scene) {
   saveOrigin(camera);
 
+  // If the navigator (nav-menu) button is clicked while we're mid-flight or
+  // sitting focused on a planet, close out the planet tab and fly the camera
+  // back to origin first. Once that return completes, onPlanet(name, false)
+  // fires and navigation.js resets its beam — only then does the navigator
+  // menu open cleanly, instead of two animations fighting each other.
+  window.addEventListener("navigatorButtonClicked", () => {
+    if (
+      flightState === STATE.FOCUSED ||
+      flightState === STATE.MOVING ||
+      flightState === STATE.ROTATING
+    ) {
+      returnToOrigin(camera);
+    }
+  });
+
   window.addEventListener("mousemove", (event) => {
     mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
     mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
   });
 
   window.addEventListener("click", (event) => {
-    if (
-      event.target.closest &&
-      event.target.closest("#infoPanel, #themePanel, .top-bar, #navigatorHUD")
-    ) {
+    if (event.target.closest && event.target.closest("#infoPanel, #themePanel, .top-bar, #navigatorHUD")) {
       return;
     }
 
@@ -66,14 +80,20 @@ export function setupInteractions(camera, scene) {
     clickMouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
 
     raycaster.setFromCamera(clickMouse, camera);
+
     const intersects = raycaster.intersectObjects(clickableObjects, true);
+
     if (!intersects.length) return;
 
     let planet = intersects[0].object;
+
     while (planet.parent && !clickableObjects.includes(planet)) {
       planet = planet.parent;
     }
 
+    // NOTE: we no longer call onPlanet(true) here. It now fires once the
+    // camera actually arrives at the planet (see updateInteractions/MOVING),
+    // so the nav beam only snaps into place when you're really there.
     goToPlanet(camera, planet.userData?.name);
   });
 }
@@ -115,11 +135,6 @@ function startMoveTo(camera, planet) {
 
     moveTargetPos.copy(targetPos)
         .sub(forward.multiplyScalar(stopDistance));
-      console.log("Camera:", camera.position);
-
-  console.log("Planet:", targetPos);
-
-  console.log("Move Target:", moveTargetPos);
 
     flightState = STATE.MOVING;
 }
@@ -127,6 +142,8 @@ function startMoveTo(camera, planet) {
 export function goToPlanet(camera, name) {
   const planet = getPlanetByName(name);
   if (!planet) return;
+  returnPos.copy(camera.position);
+  returnQuat.copy(camera.quaternion);
 
   if (activePlanet === planet && flightState !== STATE.IDLE) return;
 
@@ -200,6 +217,10 @@ export function updateInteractions(camera) {
 
         flightState = STATE.FOCUSED;
 
+        // Only now, once we've actually arrived, tell navigation.js to sync
+        // its beam/active-item state to this planet.
+        onPlanet(activePlanet.userData.name, true);
+
         openInfoPanel(activePlanet.userData, () => returnToOrigin(camera));
       }
 
@@ -207,17 +228,22 @@ export function updateInteractions(camera) {
     }
 
     case STATE.RETURNING: {
-      camera.position.lerp(originPos, POS_LERP_SPEED);
-      camera.quaternion.slerp(originQuat, FOCUS_SLERP_SPEED);
+      camera.position.lerp(returnPos, POS_LERP_SPEED);
+      camera.quaternion.slerp(returnQuat, FOCUS_SLERP_SPEED);
 
       const posDone =
-        camera.position.distanceTo(originPos) < POS_DONE_THRESHOLD;
+        camera.position.distanceTo(returnPos) < POS_DONE_THRESHOLD;
       const rotDone =
-        camera.quaternion.angleTo(originQuat) < FOCUS_DONE_THRESHOLD;
+        camera.quaternion.angleTo(returnQuat) < FOCUS_DONE_THRESHOLD;
 
       if (posDone && rotDone) {
-        camera.position.copy(originPos);
-        camera.quaternion.copy(originQuat);
+        camera.position.copy(returnPos);
+        camera.quaternion.copy(returnQuat);
+
+        // Camera is truly back home now — reset the nav beam/active state.
+        if (activePlanet) {
+          onPlanet(activePlanet.userData.name, false);
+        }
         activePlanet = null;
 
         if (pendingPlanetName) {
@@ -236,7 +262,6 @@ export function updateInteractions(camera) {
       break;
   }
 
-  // Hover HUD only while free-floating; suppressed mid-flight / while docked.
   if (flightState === STATE.IDLE) {
     raycaster.setFromCamera(mouse, camera);
     const intersects = raycaster.intersectObjects(clickableObjects, true);
@@ -258,4 +283,10 @@ export function updateInteractions(camera) {
       hideHUD();
     }
   }
+}
+
+function startReturn() {
+  flightState = STATE.RETURNING;
+  hideHUD();
+  currentPlanet = null;
 }
