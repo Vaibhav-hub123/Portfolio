@@ -1,12 +1,10 @@
 #navigatorHUD {
   pointer-events: auto;
-  position: fixed;
-  left:35%;
+  position: relative;
   transform:translateX(-50%);
-
-  bottom:clamp(20px,3vh,40px);
-
-  width:clamp(520px,55vw,750px);
+  left: 50%;
+  top: 52px; 
+  width:750px;
   height:auto;
 
   aspect-ratio:750/180;
@@ -293,7 +291,7 @@
   }
 }
 
-
+/* 
 @media (max-width:1400px){
 
     #navigatorHUD{
@@ -344,4 +342,4 @@
 
     }
 
-}
+} */

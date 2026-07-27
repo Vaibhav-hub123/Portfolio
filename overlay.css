@@ -247,13 +247,33 @@
   box-shadow: 0 0 15px #ff5555;
 }
 
-/* Robot Container */
+.roboNavHud{
+  position: absolute;
+  left: 12%;
+  bottom: 5%;
+  /* scale: 0.5;  */
+  outline: 2px solid red;
+  height: 200px;
+  width: 770px;
+  padding: 10px;
+  transform-origin: bottom left;
+    transform: scale(1);
+
+  transition: all 0.5s ease;
+
+}
+@media(max-width:1500px){
+  .roboNavHud{
+    transform: scale(0.75);
+  }
+}
+
 #robotAssistant {
   pointer-events: auto;
   position: fixed;
-  left: clamp(20px, 7vw, 160px);
-  bottom: clamp(12px, 2vh, 20px);
-  width: clamp(120px, 11vw, 200px);
+  /* left: 300px;
+  bottom: 80px; */
+  width: 200px;
   aspect-ratio: 215 / 205; 
   display: flex;
   align-items: center;
@@ -265,14 +285,14 @@
   filter: drop-shadow(0 0 8px var(--glow-medium))
     drop-shadow(0 0 18px var(--glow-strong));
   animation: robotFloat 3s ease-in-out infinite;
-  outline: 2px solid red;
-  background: rgba(255, 0, 0, 0.1);
+  /* outline: 2px solid red; */
+  /* background: rgba(255, 0, 0, 0.1); */
 }
 
 #robotAssistant svg {
   width:100%;
   height: 100%;
-  outline: 2px solid lime;
+  /* outline: 2px solid lime; */
 }
 
 /* Floating Animation */
