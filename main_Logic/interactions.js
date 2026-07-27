@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import { showHUD, hideHUD, playHUDAnimation } from "../world/HUD.js";
+import { showHUD, hideHUD, playHUDAnimation } from "../Detector/Detector.js";
 import { openInfoPanel, hideInfoPanel } from "../TAb_UI/logic/infoPanel.js";
 import { onPlanet } from "../navigation/navigation.js";
 
@@ -63,6 +63,7 @@ export function setupInteractions(camera, scene) {
       flightState === STATE.ROTATING
     ) {
       returnToOrigin(camera);
+      return;
     }
   });
 

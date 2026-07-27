@@ -52,9 +52,7 @@ function onPointerMove(event) {
 }
 function onPointerUp() {
   dragging = false;
-
   panel.classList.remove("dragging");
-
   document.removeEventListener("pointermove", onPointerMove);
   document.removeEventListener("pointerup", onPointerUp);
 }

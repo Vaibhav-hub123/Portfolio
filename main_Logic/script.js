@@ -11,7 +11,7 @@ import {
   isFocusing,
   
 } from "./interactions.js";
-import { initHUD } from "../world/HUD.js";
+import { initHUD } from "../Detector/Detector.js";
 import { applyTheme } from "../Theme/themeManager.js";
 import { createNebulas, updateNebulas } from "../world/nebulas.js";
 import { initRadarPlanets, updateRadarPlanets } from "../scanner/scanner.js";
@@ -50,6 +50,15 @@ renderer.setSize(window.innerWidth, window.innerHeight);
 
 document.body.appendChild(renderer.domElement);
 
+window.addEventListener("resize", () => {
+
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+});
 const planetData = [
   {
     name: "origin",
