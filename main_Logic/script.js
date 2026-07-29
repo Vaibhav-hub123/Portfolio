@@ -7,15 +7,16 @@ import {
   registerPlanet,
   updateInteractions,
   focusPlanet,
+  lookAtPlanet,
+  lookAtOrigin,
   cancelFocus,
   isFocusing,
-  
 } from "./interactions.js";
 import { initHUD } from "../Detector/Detector.js";
 import { applyTheme } from "../Theme/themeManager.js";
 import { createNebulas, updateNebulas } from "../world/nebulas.js";
 import { initRadarPlanets, updateRadarPlanets } from "../scanner/scanner.js";
-import { initInfoPanel } from "../TAb_UI/logic/infoPanel.js";   // ADD
+import { initInfoPanel } from "../TAb_UI/logic/infoPanel.js"; // ADD
 
 initHUD();
 initInfoPanel();
@@ -51,19 +52,17 @@ renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
 window.addEventListener("resize", () => {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
 
-    camera.aspect = window.innerWidth / window.innerHeight;
-    camera.updateProjectionMatrix();
-
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 });
 const planetData = [
   {
     name: "origin",
     title: "ORIGIN",
-    about:"Who Am I?",
+    about: "Who Am I?",
     model: "./assets/3dPlanets/planet1.glb",
     size: 6,
     position: [-18, 5, -45],
@@ -71,7 +70,7 @@ const planetData = [
   {
     name: "about",
     title: "ABOUT",
-    about:"",
+    about: "",
     model: "./assets/3dPlanets/planet2.glb",
     size: 6,
     position: [40, 40, -100],
@@ -79,10 +78,10 @@ const planetData = [
   {
     name: "projects",
     title: "PROJECTS",
-    about:"",
+    about: "",
     model: "./assets/3dPlanets/planet3.glb",
     size: 10,
-    position: [100, -20, 80  ],
+    position: [100, -20, 80],
   },
   // {
   //   name: "skills",
@@ -98,7 +97,6 @@ const planetData = [
   // },
 ];
 initRadarPlanets(planetData);
-
 
 const planets = [];
 planetData.forEach((data) => {
@@ -137,7 +135,11 @@ document.addEventListener("keyup", (e) => {
 // Listen for nav clicks from navigation.js — it dispatches this event with
 // the planet's name (e.g. "home", "about") instead of importing Three.js code.
 window.addEventListener("navigate", (e) => {
-  focusPlanet(camera, e.detail);
+ lookAtPlanet(camera, e.detail);
+;
+});
+window.addEventListener("navigate-origin", () => {
+  lookAtOrigin(camera);
 });
 
 let frames = 0;
@@ -190,10 +192,9 @@ function animate() {
   // Manual rotation is skipped while an auto-focus turn is in progress,
   // so the two don't fight each other frame-to-frame.
   if (!isFocusing()) {
-  if (rotateLeft) camera.rotateY(rotationSpeed);
-  if (rotateRight) camera.rotateY(-rotationSpeed);
-}
-
+    if (rotateLeft) camera.rotateY(rotationSpeed);
+    if (rotateRight) camera.rotateY(-rotationSpeed);
+  }
 
   planets.forEach((planet) => {
     planet.rotation.y += 0.001;

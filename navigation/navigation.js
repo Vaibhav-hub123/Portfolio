@@ -1,9 +1,8 @@
-
-
-
 const navItems = document.querySelectorAll(".navItem");
 const navigatorButton = document.getElementById("navigatorButton");
 const menu = document.querySelector(".menu");
+
+const planetNames = ["origin", "about", "projects", "skills"];
 
 const pulse = document.getElementById("energyPulse");
 const pulsePath = document.getElementById("pulsePath");
@@ -15,7 +14,7 @@ const maskLength = maskPath.getTotalLength();
 
 const pulseStops = [320, 500, 690, pathLength];
 const groupThresholds = [315, 620, 820];
-
+let isRetracted = false;
 const dashGroups = [
   document.querySelectorAll("#decorGroup1 .dash"),
   document.querySelectorAll("#decorGroup2 .dash"),
@@ -61,43 +60,71 @@ requestAnimationFrame(() => {
 
 // ---------- Open / close ----------
 navigatorButton.addEventListener("click", () => {
-  if (!navigatorOpen) {
-    window.dispatchEvent(new CustomEvent("navigatorButtonClicked"));
-  }
+  console.log({
+    navigatorOpen,
+    isRouting,
+    currentDistance,
+  });
+  if (isRouting) return;
   navigatorOpen ? closeNavigator() : openNavigator();
 });
-
-// Order must match the .navItem order in the HTML (HOME, ABOUT, PROJECTS, SKILLS)
-const planetNames = ["home", "about", "projects", "skills"];
 
 navItems.forEach((item, index) => {
   item.addEventListener("click", () => {
     if (isRouting) return;
-    navItems.forEach((i) => i.classList.remove("active"));
+
+    const alreadyActive = item.classList.contains("active");
+
+    if (alreadyActive) {
+      item.classList.remove("active");
+      retractBeam();
+      isRetracted = true;
+      window.dispatchEvent(new CustomEvent("navigate-origin"));
+      return;
+    }
+
+    navItems.forEach(i => i.classList.remove("active"));
     item.classList.add("active");
+
+    // Start the background flow only after a destination is selected
+    startFlow();
+
+    // Animate the beam to the selected destination
+    currentDistance = 0;
+
     playPulse(index);
 
     window.dispatchEvent(
-      new CustomEvent("navigate", { detail: planetNames[index] }),
+      new CustomEvent("navigate", {
+        detail: planetNames[index],
+      })
     );
   });
 });
-
 function openNavigator() {
   if (isRouting) return;
 
   navigatorOpen = true;
-  startFlow();
+  isRetracted = false;
 
-  const activeIndex = [...navItems].findIndex((item) =>
-    item.classList.contains("active"),
-  );
-  playPulse(activeIndex);
+  // Keep the beam hidden when opening.
+  currentDistance = 0;
+  maskPath.style.strokeDashoffset = maskLength;
+  pulse.style.opacity = 0;
+
+  // Reset the dash indicators
+  resetDashes();
+
+  // Simply reveal the menu
+  showMenu();
 }
 
 function closeNavigator() {
   navigatorOpen = false;
-  retractBeam();
+  if(!isRetracted){
+    retractBeam();
+  }
+  
 
   menu.style.pointerEvents = "none";
   menuTimers.forEach(clearTimeout);
@@ -106,7 +133,12 @@ function closeNavigator() {
   navItems.forEach((item) => {
     item.style.opacity = 0;
     item.style.transform = "translateY(8px)";
+    // "active" is intentionally kept — openNavigator() needs it to know
+    // which item to re-pulse the beam to next time it opens. Only an
+    // explicit repeat-click on the item itself clears it (see above).
   });
+
+  window.dispatchEvent(new CustomEvent("navigate-origin"));
 }
 
 function playPulse(index) {
@@ -186,6 +218,7 @@ function retractBeam() {
       pulseAnimationId = requestAnimationFrame(animate);
       return;
     }
+    console.log("Finished retracting");
 
     pulse.style.opacity = 0;
     maskPath.style.strokeDashoffset = maskLength;
@@ -230,9 +263,8 @@ function showMenu() {
   });
 }
 
-
-const GLOW_PAUSE_MS = 350; 
-const RESUME_JUMP = 40; 
+const GLOW_PAUSE_MS = 350;
+const RESUME_JUMP = 40;
 let flowPauseTimeout = null;
 
 function startFlow() {
@@ -263,8 +295,6 @@ function startFlow() {
       `translate(${point.x}, ${point.y}) rotate(${angle})`,
     );
 
-    // If the dot just reached a threshold, pause movement, hide it, flash the
-    // dash group, then resume a bit further ahead once the pause is over.
     const crossedIndex = groupThresholds.findIndex(
       (threshold) => previousProgress < threshold && safeProgress >= threshold,
     );
@@ -302,7 +332,6 @@ function stopFlow() {
   flowPulse.setAttribute("transform", "translate(0,0)");
 }
 
-
 function energizeGroup(index) {
   const group = dashGroups[index];
   if (!group) return;
@@ -326,32 +355,4 @@ function powerOffGroup(index) {
 
 function resetDashes() {
   document.querySelectorAll(".dash").forEach((dash) => dash.classList.remove("active"));
-}
-
-export function onPlanet(planetName, state) {
-  if (state) {
-    const index = planetNames.indexOf(planetName);
-    if (index === -1) return;
-
-    navItems.forEach((item, i) => item.classList.toggle("active", i === index));
-
-    // Snap instantly — the camera already made the trip, no need to re-animate
-    currentDistance = pulseStops[index];
-    updatePulsePosition(currentDistance);
-    maskPath.style.transition = "none";
-    maskPath.style.strokeDashoffset = maskLength - currentDistance;
-    pulse.style.opacity = 0;
-
-    resetDashes();
-    groupThresholds.forEach((threshold, i) => {
-      if (currentDistance >= threshold) powerOnGroup(i);
-    });
-  } else {
-    navItems.forEach((item) => item.classList.remove("active"));
-    currentDistance = 0;
-    pulse.style.opacity = 0;
-    maskPath.style.transition = "none";
-    maskPath.style.strokeDashoffset = maskLength;
-    resetDashes();
-  }
 }

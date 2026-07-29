@@ -5,12 +5,12 @@
   z-index: 100;
   pointer-events: none;
 }
-#hudRoot{
+.hudRoot{
 
     position:absolute;
 
     inset:0;
-
+    transform: scale(1);
     pointer-events:none;
 
 }
@@ -252,7 +252,7 @@
   left: 12%;
   bottom: 5%;
   /* scale: 0.5;  */
-  outline: 2px solid red;
+  /* outline: 2px solid red; */
   height: 200px;
   width: 770px;
   padding: 10px;

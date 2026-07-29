@@ -1,7 +1,6 @@
 import * as THREE from "three";
 import { showHUD, hideHUD, playHUDAnimation } from "../Detector/Detector.js";
 import { openInfoPanel, hideInfoPanel } from "../TAb_UI/logic/infoPanel.js";
-import { onPlanet } from "../navigation/navigation.js";
 
 const raycaster = new THREE.Raycaster();
 const mouse = new THREE.Vector2();
@@ -15,7 +14,6 @@ let currentPlanet = null;
 const STATE = {
   IDLE: "idle",
   ROTATING: "rotating",
-  MOVING: "moving",
   FOCUSED: "focused",
   RETURNING: "returning",
 };
@@ -30,42 +28,27 @@ const FOCUS_DONE_THRESHOLD = 0.001;
 const POS_LERP_SPEED = 0.045;
 const POS_DONE_THRESHOLD = 0.02;
 
-const APPROACH_MULTIPLIER = 0.9;
-const APPROACH_MARGIN = 0.011;
-
 const originPos = new THREE.Vector3();
 const originQuat = new THREE.Quaternion();
 let originSaved = false;
 
 let focusTarget = null; // THREE.Quaternion camera is slerping towards while ROTATING
-const moveTargetPos = new THREE.Vector3();
 
 const targetPos = new THREE.Vector3();
 const lookMatrix = new THREE.Matrix4();
-const dirVec = new THREE.Vector3();
+
+// ---- Navigator "look only" state (fully separate from the flightState
+// machine above — never opens the info panel, never sets activePlanet) ----
+let navLookTarget = null;
+let navLooking = false;
 
 export function registerPlanet(planet) {
   clickableObjects.push(planet);
+  console.log(planet.userData.name);
 }
 
 export function setupInteractions(camera, scene) {
   saveOrigin(camera);
-
-  // If the navigator (nav-menu) button is clicked while we're mid-flight or
-  // sitting focused on a planet, close out the planet tab and fly the camera
-  // back to origin first. Once that return completes, onPlanet(name, false)
-  // fires and navigation.js resets its beam — only then does the navigator
-  // menu open cleanly, instead of two animations fighting each other.
-  window.addEventListener("navigatorButtonClicked", () => {
-    if (
-      flightState === STATE.FOCUSED ||
-      flightState === STATE.MOVING ||
-      flightState === STATE.ROTATING
-    ) {
-      returnToOrigin(camera);
-      return;
-    }
-  });
 
   window.addEventListener("mousemove", (event) => {
     mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
@@ -73,7 +56,10 @@ export function setupInteractions(camera, scene) {
   });
 
   window.addEventListener("click", (event) => {
-    if (event.target.closest && event.target.closest("#infoPanel, #themePanel, .top-bar, #navigatorHUD")) {
+    if (
+      event.target.closest &&
+      event.target.closest("#infoPanel, #themePanel, .top-bar, #navigatorHUD")
+    ) {
       return;
     }
 
@@ -92,9 +78,6 @@ export function setupInteractions(camera, scene) {
       planet = planet.parent;
     }
 
-    // NOTE: we no longer call onPlanet(true) here. It now fires once the
-    // camera actually arrives at the planet (see updateInteractions/MOVING),
-    // so the nav beam only snaps into place when you're really there.
     goToPlanet(camera, planet.userData?.name);
   });
 }
@@ -112,7 +95,6 @@ function getPlanetByName(name) {
 
 function startRotateTo(camera, planet) {
   planet.getWorldPosition(targetPos);
-  targetPos.y = camera.position.y;
 
   lookMatrix.lookAt(camera.position, targetPos, camera.up);
   focusTarget = new THREE.Quaternion().setFromRotationMatrix(lookMatrix);
@@ -120,39 +102,19 @@ function startRotateTo(camera, planet) {
   flightState = STATE.ROTATING;
 }
 
-function startMoveTo(camera, planet) {
-    const worldRadius =
-        planet.userData.boundingSphere.radius;
-
-    const stopDistance =
-        worldRadius * APPROACH_MULTIPLIER +
-        APPROACH_MARGIN;
-
-    planet.getWorldPosition(targetPos);
-
-    const forward = new THREE.Vector3(0,0,-1)
-        .applyQuaternion(camera.quaternion)
-        .normalize();
-
-    moveTargetPos.copy(targetPos)
-        .sub(forward.multiplyScalar(stopDistance));
-
-    flightState = STATE.MOVING;
-}
-
 export function goToPlanet(camera, name) {
   const planet = getPlanetByName(name);
   if (!planet) return;
+
+  // A real planet click always wins over a navigator "look" in progress.
+  navLooking = false;
+
   returnPos.copy(camera.position);
   returnQuat.copy(camera.quaternion);
 
   if (activePlanet === planet && flightState !== STATE.IDLE) return;
 
-  if (
-    flightState === STATE.FOCUSED ||
-    flightState === STATE.MOVING ||
-    flightState === STATE.ROTATING
-  ) {
+  if (flightState === STATE.FOCUSED || flightState === STATE.ROTATING) {
     hideInfoPanel();
     pendingPlanetName = name;
     startReturn();
@@ -170,6 +132,13 @@ export function goToPlanet(camera, name) {
   startRotateTo(camera, planet);
 }
 
+export function lookAtOrigin(camera) {
+  if (flightState !== STATE.IDLE) return;
+
+  navLookTarget = originQuat.clone();
+  navLooking = true;
+}
+
 /** Close the panel (if open) and fly the camera back to its saved origin. */
 export function returnToOrigin(camera) {
   if (flightState === STATE.IDLE) return;
@@ -178,9 +147,26 @@ export function returnToOrigin(camera) {
   startReturn();
 }
 
-// Kept for the nav-menu integration (navigation.js dispatches a "navigate" event).
 export function focusPlanet(camera, name) {
   goToPlanet(camera, name);
+}
+
+/**
+ * Navigator-only camera rotation. Turns the camera to face the planet's
+ * direction — nothing else. No info panel, no HUD, no flightState changes.
+ * Ignored while a real planet-click flight is in progress, so the two
+ * systems can never fight over the camera.
+ */
+export function lookAtPlanet(camera, name) {
+  if (flightState !== STATE.IDLE) return;
+
+  const planet = getPlanetByName(name);
+  if (!planet) return;
+
+  planet.getWorldPosition(targetPos);
+  lookMatrix.lookAt(camera.position, targetPos, camera.up);
+  navLookTarget = new THREE.Quaternion().setFromRotationMatrix(lookMatrix);
+  navLooking = true;
 }
 
 export function cancelFocus() {
@@ -192,35 +178,24 @@ export function isFocusing() {
 }
 
 export function updateInteractions(camera) {
+  // Navigator "look only" rotation — independent of the flightState
+  // machine, only runs while nothing else owns the camera.
+  if (navLooking && flightState === STATE.IDLE) {
+    camera.quaternion.slerp(navLookTarget, FOCUS_SLERP_SPEED);
+    if (camera.quaternion.angleTo(navLookTarget) < FOCUS_DONE_THRESHOLD) {
+      camera.quaternion.copy(navLookTarget);
+      navLooking = false;
+    }
+  }
+
   switch (flightState) {
     case STATE.ROTATING: {
       camera.quaternion.slerp(focusTarget, FOCUS_SLERP_SPEED);
+
       if (camera.quaternion.angleTo(focusTarget) < FOCUS_DONE_THRESHOLD) {
         camera.quaternion.copy(focusTarget);
-        startMoveTo(camera, activePlanet);
-      }
-      break;
-    }
-
-    case STATE.MOVING: {
-      const speed = 2.5;
-
-      const distance = camera.position.distanceTo(moveTargetPos);
-
-      if (distance > speed) {
-        const direction = new THREE.Vector3()
-          .subVectors(moveTargetPos, camera.position)
-          .normalize();
-
-        camera.position.addScaledVector(direction, speed);
-      } else {
-        camera.position.copy(moveTargetPos);
 
         flightState = STATE.FOCUSED;
-
-        // Only now, once we've actually arrived, tell navigation.js to sync
-        // its beam/active-item state to this planet.
-        onPlanet(activePlanet.userData.name, true);
 
         openInfoPanel(activePlanet.userData, () => returnToOrigin(camera));
       }
@@ -232,19 +207,12 @@ export function updateInteractions(camera) {
       camera.position.lerp(returnPos, POS_LERP_SPEED);
       camera.quaternion.slerp(returnQuat, FOCUS_SLERP_SPEED);
 
-      const posDone =
-        camera.position.distanceTo(returnPos) < POS_DONE_THRESHOLD;
       const rotDone =
         camera.quaternion.angleTo(returnQuat) < FOCUS_DONE_THRESHOLD;
 
-      if (posDone && rotDone) {
-        camera.position.copy(returnPos);
+      if (rotDone) {
         camera.quaternion.copy(returnQuat);
 
-        // Camera is truly back home now — reset the nav beam/active state.
-        if (activePlanet) {
-          onPlanet(activePlanet.userData.name, false);
-        }
         activePlanet = null;
 
         if (pendingPlanetName) {
