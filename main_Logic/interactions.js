@@ -5,8 +5,6 @@ import { openInfoPanel, hideInfoPanel } from "../TAb_UI/logic/infoPanel.js";
 const raycaster = new THREE.Raycaster();
 const mouse = new THREE.Vector2();
 const clickMouse = new THREE.Vector2();
-const returnPos = new THREE.Vector3();
-const returnQuat = new THREE.Quaternion();
 const clickableObjects = [];
 
 let currentPlanet = null;
@@ -14,6 +12,8 @@ let currentPlanet = null;
 const STATE = {
   IDLE: "idle",
   ROTATING: "rotating",
+  WAITING: "waiting",
+  TRAVELLING: "travelling",
   FOCUSED: "focused",
   RETURNING: "returning",
 };
@@ -25,12 +25,22 @@ let pendingPlanetName = null;
 const FOCUS_SLERP_SPEED = 0.06;
 const FOCUS_DONE_THRESHOLD = 0.001;
 
-const POS_LERP_SPEED = 0.045;
-const POS_DONE_THRESHOLD = 0.02;
+const LOOK_PAUSE_TIME = 700; // milliseconds
 
-const originPos = new THREE.Vector3();
-const originQuat = new THREE.Quaternion();
-let originSaved = false;
+const TRAVEL_SPEED = 1.3; // 0.02 slow, 0.05 medium, 0.08 fast
+const TRAVEL_STOP_DISTANCE = 10; // distance from planet centre
+
+// ---------- Return ----------
+const RETURN_SPEED = 0.045;
+
+// ---- Fixed origin (Option 1) ----
+// The camera always starts at (0,0,0) with whatever rotation is set right
+// after camera.position.set(0, 0, 0) runs in script.js. Since that never
+// changes, we bake it in as constants instead of tracking/copying it every
+// flight. No saveOrigin(), no returnPos/returnQuat copying needed anymore.
+const ORIGIN_POSITION = new THREE.Vector3(0, 0, 0);
+const ORIGIN_QUATERNION = new THREE.Quaternion();
+let originInitialized = false;
 
 let focusTarget = null; // THREE.Quaternion camera is slerping towards while ROTATING
 
@@ -42,13 +52,24 @@ const lookMatrix = new THREE.Matrix4();
 let navLookTarget = null;
 let navLooking = false;
 
+const travelTarget = new THREE.Vector3();
+const travelDirection = new THREE.Vector3();
+
+let waitStart = 0;
+
 export function registerPlanet(planet) {
   clickableObjects.push(planet);
   console.log(planet.userData.name);
 }
 
 export function setupInteractions(camera, scene) {
-  saveOrigin(camera);
+  // Capture the origin rotation once, right after the camera is placed at
+  // (0,0,0) in script.js. This replaces saveOrigin().
+  if (!originInitialized) {
+    camera.position.copy(ORIGIN_POSITION);
+    ORIGIN_QUATERNION.copy(camera.quaternion);
+    originInitialized = true;
+  }
 
   window.addEventListener("mousemove", (event) => {
     mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
@@ -82,13 +103,6 @@ export function setupInteractions(camera, scene) {
   });
 }
 
-function saveOrigin(camera) {
-  if (originSaved) return;
-  originPos.copy(camera.position);
-  originQuat.copy(camera.quaternion);
-  originSaved = true;
-}
-
 function getPlanetByName(name) {
   return clickableObjects.find((planet) => planet.userData?.name === name);
 }
@@ -108,9 +122,6 @@ export function goToPlanet(camera, name) {
 
   // A real planet click always wins over a navigator "look" in progress.
   navLooking = false;
-
-  returnPos.copy(camera.position);
-  returnQuat.copy(camera.quaternion);
 
   if (activePlanet === planet && flightState !== STATE.IDLE) return;
 
@@ -135,11 +146,11 @@ export function goToPlanet(camera, name) {
 export function lookAtOrigin(camera) {
   if (flightState !== STATE.IDLE) return;
 
-  navLookTarget = originQuat.clone();
+  navLookTarget = ORIGIN_QUATERNION.clone();
   navLooking = true;
 }
 
-/** Close the panel (if open) and fly the camera back to its saved origin. */
+/** Close the panel (if open) and fly the camera back to the fixed origin. */
 export function returnToOrigin(camera) {
   if (flightState === STATE.IDLE) return;
   hideInfoPanel();
@@ -195,6 +206,34 @@ export function updateInteractions(camera) {
       if (camera.quaternion.angleTo(focusTarget) < FOCUS_DONE_THRESHOLD) {
         camera.quaternion.copy(focusTarget);
 
+        waitStart = performance.now();
+
+        flightState = STATE.WAITING;
+      }
+
+      break;
+    }
+    case STATE.WAITING: {
+      if (performance.now() - waitStart >= LOOK_PAUSE_TIME) {
+        activePlanet.getWorldPosition(travelTarget);
+
+        travelDirection
+          .subVectors(travelTarget, camera.position)
+          .normalize();
+
+        flightState = STATE.TRAVELLING;
+      }
+
+      break;
+    }
+    case STATE.TRAVELLING: {
+      activePlanet.getWorldPosition(travelTarget);
+
+      const distance = camera.position.distanceTo(travelTarget);
+
+      if (distance > TRAVEL_STOP_DISTANCE) {
+        camera.position.addScaledVector(travelDirection, TRAVEL_SPEED);
+      } else {
         flightState = STATE.FOCUSED;
 
         openInfoPanel(activePlanet.userData, () => returnToOrigin(camera));
@@ -202,16 +241,18 @@ export function updateInteractions(camera) {
 
       break;
     }
-
     case STATE.RETURNING: {
-      camera.position.lerp(returnPos, POS_LERP_SPEED);
-      camera.quaternion.slerp(returnQuat, FOCUS_SLERP_SPEED);
+      camera.position.lerp(ORIGIN_POSITION, RETURN_SPEED);
+      camera.quaternion.slerp(ORIGIN_QUATERNION, FOCUS_SLERP_SPEED);
 
+      const posDone =
+        camera.position.distanceTo(ORIGIN_POSITION) < 0.02;
       const rotDone =
-        camera.quaternion.angleTo(returnQuat) < FOCUS_DONE_THRESHOLD;
+        camera.quaternion.angleTo(ORIGIN_QUATERNION) < FOCUS_DONE_THRESHOLD;
 
-      if (rotDone) {
-        camera.quaternion.copy(returnQuat);
+      if (posDone && rotDone) {
+        camera.position.copy(ORIGIN_POSITION);
+        camera.quaternion.copy(ORIGIN_QUATERNION);
 
         activePlanet = null;
 

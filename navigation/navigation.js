@@ -338,7 +338,7 @@ function energizeGroup(index) {
 
   group.forEach((dash, i) => {
     dash.style.animation = "none";
-    void dash.offsetWidth; // force reflow so the reset is picked up
+    void dash.offsetWidth;
     setTimeout(() => {
       dash.style.animation = "dashEnergy .35s ease";
     }, i * 90);
