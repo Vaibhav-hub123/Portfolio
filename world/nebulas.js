@@ -1,6 +1,7 @@
-import * as THREE from "https://unpkg.com/three@0.179.1/build/three.module.js";
+import * as THREE from "three";
 
-const nebulas = [];
+const nebulas = [];// stores the nebula in an array 
+
 
 export function createNebulas(scene) {
   const nebulaData = [
@@ -61,21 +62,26 @@ export function createNebulas(scene) {
       opacity: 0.7,
     },
   ];
+
   // Load textures
   const textureLoader = new THREE.TextureLoader();
 
+  //an array for the nebula textures 
   const nebulaTextures = [
     textureLoader.load("assets/textures/nebula1.png"),
     textureLoader.load("assets/textures/nebula2.png"),
     textureLoader.load("assets/textures/nebula3.png"),
   ];
 
+  // adding each nebula with the data provided in the nebulaData with the texures in nebulaTextures 
   nebulaData.forEach((data) => {
-    addNebula(scene, nebulaTextures[data.texture], data);
+    addNebula(scene, nebulaTextures[data.texture], data);// calling the addnebula functions for the nebulas we created or rather put in array 
   });
 }
 
+// adds the nebula to the scene 
 function addNebula(scene, texture, options) {
+  // creating a new material 
   const material = new THREE.MeshBasicMaterial({
     map: texture,
     transparent: true,
@@ -84,27 +90,26 @@ function addNebula(scene, texture, options) {
     opacity: options.opacity,
   });
 
+  //creating a plane mesh with the material made 
   const mesh = new THREE.Mesh(
     new THREE.PlaneGeometry(options.size, options.size),
     material,
   );
 
-  mesh.position.set(options.x, options.y, options.z);
 
-  mesh.rotation.z = options.rotation;
-
-  mesh.userData.baseOpacity = options.opacity;
-
-  scene.add(mesh);
-
-  nebulas.push(mesh);
+  mesh.position.set(options.x, options.y, options.z);// setting the position for the mesh
+  mesh.rotation.z = options.rotation;// setting the rotaion a little bit
+  mesh.userData.baseOpacity = options.opacity;// setting opacity 
+  scene.add(mesh);//adding the mesh into the scene 
+  nebulas.push(mesh);// adding the nebula into the mesh 
 }
-export function updateNebulas(time, camera) {
-  nebulas.forEach((nebula, i) => {
-    nebula.lookAt(camera.position);
-    nebula.rotation.z += 0.00003 * (i + 1);
 
-    nebula.material.opacity =
-      nebula.userData.baseOpacity + Math.sin(time * 0.2 + i) * 0.01;
+//animate the nebulas basically 
+export function updateNebulas(time, camera) {
+  // get all the nebulas 
+  nebulas.forEach((nebula, i) => {
+    nebula.lookAt(camera.position);//make the nebulas look in the direction of the camera otherwise they may look wierd 
+    nebula.rotation.z += 0.00003 * (i + 1);// add a little bit of rotation to make it look alive 
+    nebula.material.opacity = nebula.userData.baseOpacity + Math.sin(time * 0.2 + i) * 0.01; // changing opacity a little bit 
   });
 }
