@@ -105,12 +105,10 @@ function prepareStroke(element) {
 export function initHUD() {
   prepareStroke(outerCircle);
   prepareStroke(innerCircle);
-
   centerCircles.forEach(prepareStroke);
   segments.forEach(prepareStroke);
   smallSegments.forEach(prepareStroke);
   resetScanning();
-
 }
 
 function draw(element, duration) {
