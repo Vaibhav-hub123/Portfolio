@@ -1,5 +1,4 @@
 import * as THREE from "three"; // importing three js
-import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js"; // helps load .glb or.gltf things in the scene 
 import { createStars } from "../world/stars.js";
 import { createPlanet } from "../world/planets.js";
 import {
