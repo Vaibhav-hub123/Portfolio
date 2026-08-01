@@ -2,6 +2,7 @@ body {
   margin: 0;
   overflow: hidden;
   background: black;
+  color: white;
 }
 #planetHUD {
   position: fixed;
