@@ -79,6 +79,7 @@ export function createNebulas(scene) {
   });
 }
 
+
 // adds the nebula to the scene 
 function addNebula(scene, texture, options) {
   // creating a new material 
@@ -103,6 +104,7 @@ function addNebula(scene, texture, options) {
   scene.add(mesh);//adding the mesh into the scene 
   nebulas.push(mesh);// adding the nebula into the mesh 
 }
+
 
 //animate the nebulas basically 
 export function updateNebulas(time, camera) {

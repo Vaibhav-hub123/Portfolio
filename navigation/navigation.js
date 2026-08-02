@@ -2,19 +2,21 @@ const navItems = document.querySelectorAll(".navItem");
 const navigatorButton = document.getElementById("navigatorButton");
 const menu = document.querySelector(".menu");
 
-const planetNames = ["origin", "about", "projects", "skills"];
+const planetNames = ["origin", "about", "projects", "skills"]; // for displaying the buttons and then numbering them for easier use 
 
 const pulse = document.getElementById("energyPulse");
 const pulsePath = document.getElementById("pulsePath");
 const flowPulse = document.getElementById("flowPulse");
 const maskPath = document.getElementById("beamMaskPath");
 
-const pathLength = pulsePath.getTotalLength();
-const maskLength = maskPath.getTotalLength();
+const pathLength = pulsePath.getTotalLength(); // gets the total length of the pulsepath
+const maskLength = maskPath.getTotalLength(); // its basically the same but without the breaks in between 
 
-const pulseStops = [320, 500, 690, pathLength];
-const groupThresholds = [315, 620, 820];
+const pulseStops = [320, 500, 690, pathLength]; // destinations for the pulse basically location of where our origin about projects etc are located
+const groupThresholds = [315, 620, 820];//location of each deccorative lines 
+
 let isRetracted = false;
+
 const dashGroups = [
   document.querySelectorAll("#decorGroup1 .dash"),
   document.querySelectorAll("#decorGroup2 .dash"),
@@ -35,19 +37,24 @@ let currentDistance = 0;
 
 let pulseAnimationId = null;
 let flowAnimationId = null;
-let menuTimers = [];
+let menuTimers = []; // how much time each item will take to open 
 
-maskPath.style.strokeDasharray = maskLength;
-maskPath.style.strokeDashoffset = maskLength;
+maskPath.style.strokeDasharray = maskLength; // dash length is the pathLength
+maskPath.style.strokeDashoffset = maskLength;// move the dash completely off so nothing is visible at first 
 
-// ---------- Connector "draw-in" intro animation ----------
+
+//Connector intro animation 
 connectorPaths.forEach((path) => {
   const length = path.getTotalLength();
-  path.style.strokeDasharray = length;
-  path.style.strokeDashoffset = length;
+  path.style.strokeDasharray = length;// imagine the path length 100 px and strokeDashArray = 10 then it will create a dash effect with every 10 px being empty so now if we make it equal to the length the stroke will be drawn all at once 
+  path.style.strokeDashoffset = length;// it moves the dash by a certain px now if the value is equal to the length the whole thing hass moved so it seems invisible
 });
 
+
+//makes the dashes appear one by one as they are in 4 parts basically revealing them one by one using a loop
+//refresh the screen 60 times per second so when dashoffset is decresed it gives the effect of the line being drawn 
 requestAnimationFrame(() => {
+  //two because sometimes browser doesnt understand the values changing that much so two guarentees the animation 
   requestAnimationFrame(() => {
     connectorPaths.forEach((path, index) => {
       path.style.transition = "stroke-dashoffset 350ms ease";
@@ -58,42 +65,37 @@ requestAnimationFrame(() => {
   });
 });
 
-// ---------- Open / close ----------
+
+// Open / close
 navigatorButton.addEventListener("click", () => {
-  console.log({
-    navigatorOpen,
-    isRouting,
-    currentDistance,
-  });
-  if (isRouting) return;
-  navigatorOpen ? closeNavigator() : openNavigator();
+  if (isRouting) return;// if the beam is travelling or any other acttion is taking place return 
+  navigatorOpen ? closeNavigator() : openNavigator();// if the navigator is already open close it and vice versa 
 });
 
+
+// what happens when navItems buttons are clicked 
 navItems.forEach((item, index) => {
   item.addEventListener("click", () => {
-    if (isRouting) return;
+    if (isRouting) return;//if the beam is travelling or any other acttion is taking place return 
 
-    const alreadyActive = item.classList.contains("active");
-
+    const alreadyActive = item.classList.contains("active");//if the button is already pressed 
     if (alreadyActive) {
-      item.classList.remove("active");
-      retractBeam();
-      isRetracted = true;
-      window.dispatchEvent(new CustomEvent("navigate-origin"));
+      item.classList.remove("active");//turn it off
+      retractBeam();//retract the beam 
+      isRetracted = true;//tell that it is retracted
+      window.dispatchEvent(new CustomEvent("navigate-origin"));// call this function in script.js so that camera returns bacck to the origin 
       return;
     }
 
-    navItems.forEach(i => i.classList.remove("active"));
-    item.classList.add("active");
+    //if not active 
+    navItems.forEach(i => i.classList.remove("active"));//remove active from anything which is active 
+    item.classList.add("active");//add active to this item 
+    startFlow();// Start the background flow only after a destination is selected
 
-    // Start the background flow only after a destination is selected
-    startFlow();
-
-    // Animate the beam to the selected destination
     currentDistance = 0;
+    playPulse(index);//animate the beam to the specific index or item 
 
-    playPulse(index);
-
+    //call this function again in script.js to look towards the planet 
     window.dispatchEvent(
       new CustomEvent("navigate", {
         detail: planetNames[index],
@@ -101,58 +103,60 @@ navItems.forEach((item, index) => {
     );
   });
 });
+
+
+//opening the navigator menu basically 
 function openNavigator() {
-  if (isRouting) return;
+  if (isRouting) return;//  if the beam is travelling or any other acttion is taking place return 
 
-  navigatorOpen = true;
-  isRetracted = false;
+  navigatorOpen = true; // tell it that navigator is opened so if clicked again it can close 
+  isRetracted = false; //initialize it as at first their is no need for retraction as their is no beam  
 
-  // Keep the beam hidden when opening.
-  currentDistance = 0;
-  maskPath.style.strokeDashoffset = maskLength;
-  pulse.style.opacity = 0;
+  currentDistance = 0;// Keep the beam hidden when opening.
+  maskPath.style.strokeDashoffset = maskLength;// hide the beam 
+  pulse.style.opacity = 0;// hide the pulse 
 
-  // Reset the dash indicators
-  resetDashes();
-
-  // Simply reveal the menu
-  showMenu();
+  resetDashes();// Reset the dash indicators
+  showMenu();// Simply reveal the menu
 }
 
+
+//closing the navigor
 function closeNavigator() {
-  navigatorOpen = false;
-  if(!isRetracted){
+  navigatorOpen = false;//tell it that the navigator is closed so if it is cllicked again navigator can open 
+  if(!isRetracted){// if the beam is their but we didnt click the the menu button so it didnt retract the beam so just do it here 
     retractBeam();
   }
   
+  menu.style.pointerEvents = "none";// make the menu not able to click 
+  menuTimers.forEach(clearTimeout);// clear the timeout 
+  menuTimers = []; // clear the array 
 
-  menu.style.pointerEvents = "none";
-  menuTimers.forEach(clearTimeout);
-  menuTimers = [];
-
+  //we dont remove the active from here so that when menu restarts the pulse will tarvel to where it was previously
   navItems.forEach((item) => {
     item.style.opacity = 0;
     item.style.transform = "translateY(8px)";
-    // "active" is intentionally kept — openNavigator() needs it to know
-    // which item to re-pulse the beam to next time it opens. Only an
-    // explicit repeat-click on the item itself clears it (see above).
   });
 
-  window.dispatchEvent(new CustomEvent("navigate-origin"));
+  window.dispatchEvent(new CustomEvent("navigate-origin"));//call this function so that camera travels towands the origin
 }
 
-function playPulse(index) {
-  if (index < 0) return;
-  cancelAnimationFrame(pulseAnimationId);
 
-  const targetDistance = pulseStops[index];
-  if (Math.abs(targetDistance - currentDistance) < 2) {
+//the main logic for the pulse animation 
+function playPulse(index) {
+  if (index < 0) return; // if the index is invalid dont do anything 
+  cancelAnimationFrame(pulseAnimationId);//cancelling any animation before anything happens again for safety purposes 
+
+  const targetDistance = pulseStops[index];// get the distance from the array 
+
+  //baiscally here for multiple clicks on the navigator and menu buttons etc 
+  if (Math.abs(targetDistance - currentDistance) < 2) { 
     showMenu();
     return;
   }
 
-  const direction = Math.sign(targetDistance - currentDistance);
-  const menuTrigger = currentDistance + (targetDistance - currentDistance) * 0.75;
+  const direction = Math.sign(targetDistance - currentDistance); // which direction do the pulse need to travel only forward and backwards (positive or negative )
+  const menuTrigger = currentDistance + (targetDistance - currentDistance) * 0.75; 
 
   menuStarted = false;
   isRouting = true;
@@ -161,31 +165,32 @@ function playPulse(index) {
 
   let progress = currentDistance;
 
+  //this is the animation function which runs 60 frames per second actually this depends on the moniter if its a 144hz it will run more frames per second 
   function animate() {
-    const previousProgress = progress;
-    progress += direction * 12;
-    currentDistance = progress;
+    const previousProgress = progress; //save this for the decorations in between the lines the three vertical lines
+    progress += direction * 12;//ig 12 is the medium speed can and will tweak this more lol 
+    currentDistance = progress; //we just do this many frames persecond to look like an animation lol 
 
-    updatePulsePosition(progress);
-    maskPath.style.strokeDashoffset = maskLength - progress;
-    updateGroupsForCrossing(previousProgress, progress, direction);
+    updatePulsePosition(progress);// call this function continuasly for that effect 
+    maskPath.style.strokeDashoffset = maskLength - progress;// adds or subtract based on the direction the path needs to travel 
+    updateGroupsForCrossing(previousProgress, progress, direction);//make the group of strokes brighten for the effects 
 
-    const reached =
-      (direction > 0 && progress >= targetDistance) ||
-      (direction < 0 && progress <= targetDistance);
+    const reached =(direction > 0 && progress >= targetDistance) || (direction < 0 && progress <= targetDistance);// reached the destination :)
 
+    //if not reached the destination 
     if (!reached) {
+      //for better workflow
       if (progress >= menuTrigger && !menuStarted) {
         menuStarted = true;
         showMenu();
       }
-      pulseAnimationId = requestAnimationFrame(animate);
+      pulseAnimationId = requestAnimationFrame(animate);//makes this into an animation frame and store that into a variable 
       return;
     }
 
-    currentDistance = targetDistance;
-    updatePulsePosition(targetDistance);
-    maskPath.style.strokeDashoffset = maskLength - targetDistance;
+    currentDistance = targetDistance; // update the current distance 
+    updatePulsePosition(targetDistance);// update the postion of the pulse for real not just for the animation 
+    maskPath.style.strokeDashoffset = maskLength - targetDistance;// final length till it will come 
     pulse.style.opacity = 0;
     isRouting = false;
     pulseAnimationId = null;

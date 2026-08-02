@@ -64,27 +64,19 @@ const themes = {
 
 export function applyTheme(name) {
   const theme = themes[name];
-
   if (!theme) return;
-
   const root = document.documentElement;
-
   root.style.setProperty("--primary", theme.primary);
   root.style.setProperty("--secondary", theme.secondary);
-
   root.style.setProperty("--white", theme.white);
-
   root.style.setProperty("--glass", theme.glass);
   root.style.setProperty("--border", theme.border);
-
   root.style.setProperty("--panel-left", theme.panelLeft);
   root.style.setProperty("--panel-middle", theme.panelMiddle);
   root.style.setProperty("--panel-right", theme.panelRight);
-
   root.style.setProperty("--glow-soft", theme.glowSoft);
   root.style.setProperty("--glow-medium", theme.glowMedium);
   root.style.setProperty("--glow-strong", theme.glowStrong);
-
   root.style.setProperty("--blue-soft", theme.blueSoft);
   root.style.setProperty("--blue-medium", theme.blueMedium);
   root.style.setProperty("--blue-strong", theme.blueStrong);
