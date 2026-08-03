@@ -124,10 +124,11 @@ function openNavigator() {
 //closing the navigor
 function closeNavigator() {
   navigatorOpen = false;//tell it that the navigator is closed so if it is cllicked again navigator can open 
-  if(!isRetracted){// if the beam is their but we didnt click the the menu button so it didnt retract the beam so just do it here 
+  if(currentDistance > 0){
     retractBeam();
+    navItems.forEach(i => i.classList.remove("active"));
   }
-  
+ 
   menu.style.pointerEvents = "none";// make the menu not able to click 
   menuTimers.forEach(clearTimeout);// clear the timeout 
   menuTimers = []; // clear the array 
@@ -156,7 +157,7 @@ function playPulse(index) {
   }
 
   const direction = Math.sign(targetDistance - currentDistance); // which direction do the pulse need to travel only forward and backwards (positive or negative )
-  const menuTrigger = currentDistance + (targetDistance - currentDistance) * 0.75; 
+  const menuTrigger = currentDistance + (targetDistance - currentDistance) * 0.75; // calculates 75 percent of the journey
 
   menuStarted = false;
   isRouting = true;
@@ -171,19 +172,14 @@ function playPulse(index) {
     progress += direction * 12;//ig 12 is the medium speed can and will tweak this more lol 
     currentDistance = progress; //we just do this many frames persecond to look like an animation lol 
 
-    updatePulsePosition(progress);// call this function continuasly for that effect 
+    updatePulsePosition(progress);// call this function continuously for that effect 
     maskPath.style.strokeDashoffset = maskLength - progress;// adds or subtract based on the direction the path needs to travel 
     updateGroupsForCrossing(previousProgress, progress, direction);//make the group of strokes brighten for the effects 
 
-    const reached =(direction > 0 && progress >= targetDistance) || (direction < 0 && progress <= targetDistance);// reached the destination :)
+    const reached = (direction > 0 && progress >= targetDistance) || (direction < 0 && progress <= targetDistance);// reached the destination :)
 
     //if not reached the destination 
     if (!reached) {
-      //for better workflow
-      if (progress >= menuTrigger && !menuStarted) {
-        menuStarted = true;
-        showMenu();
-      }
       pulseAnimationId = requestAnimationFrame(animate);//makes this into an animation frame and store that into a variable 
       return;
     }
@@ -194,67 +190,70 @@ function playPulse(index) {
     pulse.style.opacity = 0;
     isRouting = false;
     pulseAnimationId = null;
-
-    if (!menuStarted) {
-      menuStarted = true;
-      showMenu();
-    }
   }
 
-  pulseAnimationId = requestAnimationFrame(animate);
+  pulseAnimationId = requestAnimationFrame(animate);// start the animation here the first call 
 }
 
+
+//retracts the beam on closing the menu items or navigator
 function retractBeam() {
-  resetDashes();
-  cancelAnimationFrame(pulseAnimationId);
-  stopFlow();
+  if (currentDistance <= 0) return; // safety check
+  resetDashes();// reset the dashes so that they dont glow anymore 
+  cancelAnimationFrame(pulseAnimationId);// cancel any animation if already happening 
+  stopFlow();// finaly stop the flow 
 
   isRouting = true;
   pulse.style.opacity = 1;
 
   function animate() {
     currentDistance = Math.max(0, currentDistance - 12);
-    flowPulse.style.opacity = currentDistance / pulseStops[pulseStops.length - 1];
+    flowPulse.style.opacity = currentDistance / pulseStops[pulseStops.length - 1];// fade effect a little 
 
     updatePulsePosition(currentDistance);
-    maskPath.style.strokeDashoffset = maskLength - currentDistance;
+    maskPath.style.strokeDashoffset = maskLength - currentDistance;// add a little on the maskLength so that it hides away that much px's
 
+    //if not fully retracted
     if (currentDistance > 0) {
-      pulseAnimationId = requestAnimationFrame(animate);
+      pulseAnimationId = requestAnimationFrame(animate); // call the animation function and store in a variable 
       return;
     }
     console.log("Finished retracting");
 
-    pulse.style.opacity = 0;
-    maskPath.style.strokeDashoffset = maskLength;
+    pulse.style.opacity = 0;//dont show the pulse any more 
+    maskPath.style.strokeDashoffset = maskLength;// make the line fully go out of the viewbox 
     isRouting = false;
-    pulseAnimationId = null;
+    pulseAnimationId = null; //no more animating 
   }
 
-  pulseAnimationId = requestAnimationFrame(animate);
+  pulseAnimationId = requestAnimationFrame(animate);//call for the first frame
 }
 
+
+//just updates the position of the pulse to a certain distance 
 function updatePulsePosition(distance) {
-  const point = pulsePath.getPointAtLength(distance);
-  pulse.setAttribute("cx", point.x);
-  pulse.setAttribute("cy", point.y);
+  const point = pulsePath.getPointAtLength(distance); //get the coordinate bascically in the form or x and y 
+  pulse.setAttribute("cx", point.x);// make the x position of the pulse the x position of the point 
+  pulse.setAttribute("cy", point.y);// make the y position of the pulse the y position of the point 
 }
 
+
+//this function makes the dashed glow up according to the distance the pulse is some thing like if the dashed are between the prev and next then glow that group of dashed 
 function updateGroupsForCrossing(prev, next, direction) {
   groupThresholds.forEach((threshold, groupIndex) => {
-    if (direction > 0 && prev < threshold && next >= threshold) {
+    if (direction > 0 && prev < threshold && next >= threshold) {//if we have reached the threshold power up that group of pulse 
       energizeGroup(groupIndex);
       powerOnGroup(groupIndex);
-    } else if (direction < 0 && prev > threshold && next <= threshold) {
+    } else if (direction < 0 && prev > threshold && next <= threshold) { //if we are retracting turn them off 
       powerOffGroup(groupIndex);
     }
   });
 }
 
-// ---------- Menu reveal ----------
+//Menu reveal 
 function showMenu() {
   menu.style.pointerEvents = "auto";
-  menuTimers.forEach(clearTimeout);
+  menuTimers.forEach(clearTimeout);//remove any previous timeouts we do this so they appear one by one 
   menuTimers = [];
 
   navItems.forEach((item, index) => {
@@ -262,7 +261,7 @@ function showMenu() {
       if (!navigatorOpen) return;
       item.style.opacity = "1";
       item.style.transform = "translateY(0)";
-    }, index * 90);
+    }, index * 90);//a 90ms gap in between the nav items 
 
     menuTimers.push(timer);
   });
@@ -272,43 +271,41 @@ const GLOW_PAUSE_MS = 350;
 const RESUME_JUMP = 40;
 let flowPauseTimeout = null;
 
-function startFlow() {
-  cancelAnimationFrame(flowAnimationId);
-  clearTimeout(flowPauseTimeout);
-  flowPulse.classList.remove("flow-hidden");
 
-  let progress = 0;
+//the glowing flow that keeps on going in the loop 
+function startFlow() {
+  cancelAnimationFrame(flowAnimationId);// if any animation is already their cancel it (security check)
+  clearTimeout(flowPauseTimeout);//
+  flowPulse.classList.remove("flow-hidden");//make the flow visible 
+
+  let progress = 0;//so that it always return to the beginning
   let previousProgress = 0;
 
+  //animating the loop 
   function loop() {
+    //security check 
     if (!navigatorOpen) {
       stopFlow();
       return;
     }
 
-    const safeProgress = Math.min(progress, currentDistance);
-    const point = pulsePath.getPointAtLength(safeProgress);
-    const nextPoint = pulsePath.getPointAtLength(
-      Math.min(safeProgress + 1, currentDistance),
-    );
+    const safeProgress = Math.min(progress, currentDistance);//how much can we go before stopping or rather restarting 
+    const point = pulsePath.getPointAtLength(safeProgress);//the current coordinate
+    const nextPoint = pulsePath.getPointAtLength(Math.min(safeProgress + 1, currentDistance),); //get the distance a little bit more to it but not more that the currentDistance till the line actually is 
 
-    const angle =
-      (Math.atan2(nextPoint.y - point.y, nextPoint.x - point.x) * 180) / Math.PI;
+    const angle =(Math.atan2(nextPoint.y - point.y, nextPoint.x - point.x) * 180) / Math.PI;//I dont understand this mathss lol 
 
-    flowPulse.setAttribute(
-      "transform",
-      `translate(${point.x}, ${point.y}) rotate(${angle})`,
-    );
+    flowPulse.setAttribute("transform",`translate(${point.x}, ${point.y}) rotate(${angle})`,); // we are setting transform to the points and the required angle 
 
-    const crossedIndex = groupThresholds.findIndex(
-      (threshold) => previousProgress < threshold && safeProgress >= threshold,
-    );
+    const crossedIndex = groupThresholds.findIndex((threshold) => previousProgress < threshold && safeProgress >= threshold,);// find which dashed group is in the way of the flow
     previousProgress = safeProgress;
 
+    //if their exists a dashed group then glow them up 
     if (crossedIndex !== -1) {
       energizeGroup(crossedIndex);
       flowPulse.classList.add("flow-hidden");
 
+      //glow  them one by one not all at once 
       flowPauseTimeout = setTimeout(() => {
         if (!navigatorOpen) return;
         flowPulse.classList.remove("flow-hidden");
@@ -317,47 +314,56 @@ function startFlow() {
         progress = resumed >= currentDistance ? 0 : resumed;
         previousProgress = progress;
 
-        flowAnimationId = requestAnimationFrame(loop);
-      }, GLOW_PAUSE_MS);
+        flowAnimationId = requestAnimationFrame(loop);//make it into animation 
+      }, GLOW_PAUSE_MS);//only allow the glow to pass if the dashed group have all light up 
       return;
     }
 
-    progress = progress + 5 >= currentDistance ? 0 : progress + 5;
-    flowAnimationId = requestAnimationFrame(loop);
+    progress = progress + 5 >= currentDistance ? 0 : progress + 5;//if progress gets more than the line then sent it back to start that way repeating pattern appear 
+    flowAnimationId = requestAnimationFrame(loop);//make it into animation whether there is a dashed group or not 
   }
 
-  flowAnimationId = requestAnimationFrame(loop);
+  flowAnimationId = requestAnimationFrame(loop);//first animation call
 }
 
+
+//stop the flow 
 function stopFlow() {
-  cancelAnimationFrame(flowAnimationId);
-  clearTimeout(flowPauseTimeout);
-  flowAnimationId = null;
-  flowPulse.classList.add("flow-hidden");
-  flowPulse.setAttribute("transform", "translate(0,0)");
+  cancelAnimationFrame(flowAnimationId);//security check 
+  clearTimeout(flowPauseTimeout);//clear all timeouts 
+  flowAnimationId = null;//make the animation null 
+  flowPulse.classList.add("flow-hidden");//hide the flow
+  flowPulse.setAttribute("transform", "translate(0,0)");//reset it back to 0,0
 }
 
+
+//energize one by one 
 function energizeGroup(index) {
-  const group = dashGroups[index];
-  if (!group) return;
+  const group = dashGroups[index];//get which dash group to glow based on the distance calculated 
+  if (!group) return;//if invalid just stop 
 
   group.forEach((dash, i) => {
     dash.style.animation = "none";
     void dash.offsetWidth;
     setTimeout(() => {
       dash.style.animation = "dashEnergy .35s ease";
-    }, i * 90);
+    }, i * 90);//90ms gap between each energization 
   });
 }
 
+
+//just makes them glow up 
 function powerOnGroup(index) {
   dashGroups[index]?.forEach((dash) => dash.classList.add("active"));
 }
 
+//turns off the glow 
 function powerOffGroup(index) {
   dashGroups[index]?.forEach((dash) => dash.classList.remove("active"));
 }
 
+
+//reset all of the dashes to their original state 
 function resetDashes() {
   document.querySelectorAll(".dash").forEach((dash) => dash.classList.remove("active"));
 }
