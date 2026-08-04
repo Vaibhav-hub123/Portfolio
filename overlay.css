@@ -475,7 +475,7 @@ height:clamp(150px,12vw,200px);
 .dots {
   display: inline-block;
   width: 3ch;
-  color: var(--primary);
+  color:var(--primary);
 }
 
 .dots::before {

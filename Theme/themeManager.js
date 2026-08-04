@@ -3,7 +3,7 @@ const themes = {
     primary: "#00d8ff",
     secondary: "#0077ff", // keep if you still want it for something separate; not used below
     white: "#ffffff",
-
+    
     glass: "rgba(0,180,220,.08)",
     border: "rgba(0,221,255,.35)",
 
@@ -24,7 +24,7 @@ const themes = {
     primary: "#00ff99",
     secondary: "#00cc77",
     white: "#ffffff",
-
+     
     glass: "rgba(0,255,140,.08)",
     border: "rgba(0,255,140,.35)",
 
@@ -44,7 +44,7 @@ const themes = {
     primary: "#ff5b5b",
     secondary: "#ff2f2f",
     white: "#ffffff",
-
+   
     glass: "rgba(255,70,70,.08)",
     border: "rgba(255,90,90,.35)",
 
