@@ -93,6 +93,7 @@ async function loadPanel(name) {
         .then(r => r.text());
 
     bodyEl.innerHTML = html;
+    initOriginPanel();
 }
 export function hideInfoPanel() {
   onCloseCallback = null;
@@ -101,4 +102,44 @@ export function hideInfoPanel() {
 
 export function isInfoPanelOpen() {
   return panel.classList.contains("open");
+}
+
+function initOriginPanel() {
+
+    const card = document.querySelector(".photo-box");
+
+    if (!card) return;
+
+    card.addEventListener("mousemove", (e) => {
+    console.log("moving");
+
+    const rect = card.getBoundingClientRect();
+
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
+
+    const rotateY = ((x - centerX) / centerX) * 10;
+    const rotateX = ((centerY - y) / centerY) * 10;
+
+    card.style.transform =
+        `perspective(1000px)
+         rotateX(${rotateX}deg)
+         rotateY(${rotateY}deg)
+         scale(1.02)`;
+
+});
+
+card.addEventListener("mouseleave", () => {
+
+    card.style.transform =
+        `perspective(1000px)
+         rotateX(0deg)
+         rotateY(0deg)
+         scale(1)`;
+
+});
+
 }
