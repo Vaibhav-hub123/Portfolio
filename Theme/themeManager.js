@@ -29,7 +29,7 @@ const themes = {
     border: "rgba(0,255,140,.35)",
 
     panelLeft: "rgba(0,120,70,.25)",
-    panelMiddle: "rgba(0,255,150,.10)",
+    panelMiddle: "rgba(0,255,150,.16)",
     panelRight: "rgba(0,120,70,.25)",
 
     glowSoft: "rgba(0,255,140,.35)",
@@ -49,7 +49,7 @@ const themes = {
     border: "rgba(255,90,90,.35)",
 
     panelLeft: "rgba(120,20,20,.25)",
-    panelMiddle: "rgba(255,60,60,.10)",
+    panelMiddle: "rgba(255,60,60,.16)",
     panelRight: "rgba(120,20,20,.25)",
 
     glowSoft: "rgba(255,90,90,.35)",

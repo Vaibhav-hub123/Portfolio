@@ -21,7 +21,7 @@
   --glass: rgba(0, 120, 255, 0.08);
   --border: rgba(0, 221, 255, 0.35);
   --panel-left: rgba(0, 80, 180, 0.25);
-  --panel-middle: rgba(0, 150, 255, 0.1);
+  --panel-middle: rgba(0, 150, 255, 0.16);
   --panel-right: rgba(0, 80, 180, 0.25);
   --glow-soft: rgba(0, 221, 255, 0.35);
   --glow-medium: rgba(0, 221, 255, 0.6);
@@ -74,7 +74,7 @@
   content: "";
   position: absolute;
   inset: -25px;
-  background: radial-gradient(circle, rgba(0, 180, 255, 0.18), transparent 70%);
+  background: radial-gradient(circle, var(--panel-middle), transparent 70%);
   filter: blur(25px);
   z-index: -1;
 }
