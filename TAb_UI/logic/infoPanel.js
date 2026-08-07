@@ -106,7 +106,7 @@ export function isInfoPanelOpen() {
 
 function initOriginPanel() {
 
-    const card = document.querySelector(".photo-box");
+    const card = document.querySelector(".photo-container");
 
     if (!card) return;
 

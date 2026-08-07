@@ -1,16 +1,16 @@
-body{
+body {
+  margin: 0;
 
-    margin:0;
+  background: #02040c;
 
-    background:#02040c;
+  display: flex;
 
-    display:flex;
+  justify-content: center;
 
-    justify-content:center;
+  align-items: center;
 
-    align-items:center;
-
-    height:100vh;
+  height: 100vh;
+  font-family: "Orbitron", sans-serif;
 
 }
 :root {
@@ -28,217 +28,188 @@ body{
   --blue-soft: rgba(0, 119, 255, 0.25);
   --blue-medium: rgba(0, 119, 255, 0.3);
   --blue-strong: rgba(0, 119, 255, 0.45);
-
 }
-.origin-panel{
-
-    position:relative;
-    width:100%;
-    height:100%;
-    overflow:hidden;
-
+.origin-panel {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
 }
 
-.hud{
-    position:absolute;
-    inset:0;
+.hud {
+  position: absolute;
+  inset: 0;
 
-    width:100%;
-    height:100%;
+  width: 100%;
+  height: 100%;
 
-    z-index:0;
+  z-index: 0;
 
-    pointer-events:none;
+  pointer-events: none;
 }
-.hud-overlay{
-    position:absolute;
-    inset:0;
+.hud-overlay {
+  position: absolute;
+  inset: 0;
 
-    width:100%;
-    height:100%;
+  width: 100%;
+  height: 100%;
 
-    pointer-events:none;
+  pointer-events: none;
 
-    z-index:1;
+  z-index: 1;
 }
 .hud path,
-.hud line{
+.hud line {
+  fill: none;
 
-    fill:none;
+  stroke: var(--glow-strong);
 
-    stroke:var(--glow-strong) ;
+  stroke-width: 2;
 
-    stroke-width:2;
-
-    opacity:.8;
-    /* filter:
+  opacity: 0.8;
+  /* filter:
         drop-shadow(0 0 3px var(--primary))
         drop-shadow(0 0 8px var(--primary)); */
 }
-.screen-decor{
-    opacity: 0.8;
+.screen-decor {
+  opacity: 0.8;
 }
-.circle_line1{
-    fill: none;
-    stroke: var(--glow-strong);
-    stroke-width: 2;
- filter:
-        drop-shadow(0 0 3px var(--primary))
-        drop-shadow(0 0 8px var(--primary));
+.circle_line1 {
+  fill: none;
+  stroke: var(--glow-strong);
+  stroke-width: 2;
+  filter: drop-shadow(0 0 3px var(--primary))
+    drop-shadow(0 0 8px var(--primary));
 }
-.circle_line2{
-    fill: white;
-    filter:
-        drop-shadow(0 0 3px var(--primary))
-        drop-shadow(0 0 8px var(--primary));
+.circle_line2 {
+  fill: white;
+  filter: drop-shadow(0 0 3px var(--primary))
+    drop-shadow(0 0 8px var(--primary));
 }
-.content{
-    color: var(--primary);
+.content {
+  color: var(--primary);
 
-    position:relative;
+  position: relative;
 
-    z-index:10;
+  z-index: 10;
 
-    padding:25px;
-
+  padding: 25px;
 }
 
-.profile{
-    display:flex;
-    justify-content: center;
-    perspective:1000px;
-
+.profile {
+  display: flex;
+  justify-content: center;
+  perspective: 1000px;
+  height: 600px;
+  transform: translateY(-20px);
 }
-.intro{
- flex: 1.5;
- /* align-items: center; */
-justify-content: center;
-transform: translate(150px,60px);
+.intro {
+  flex: 1;
+  /* background-color: blue;
+  opacity: 0.5; */
+  justify-content: center;
+  transform: translate(100px,100px);
 }
-.photo-container{
-    height: 100%;
-    flex: 1.75;
-    /* transform: translateY(0); */
-    
+.photo-container {
+  flex: 1;
+  /* background-color: yellow; */
+  /* opacity: 0.5; */
+  flex: 1.75;
 }
 
-.photo-box{
-    width: 300px;
-    padding-top: 10px;
-    padding-left: 8px;
-    border: 2px solid var(--blue-strong);
-    /* overflow:hidden; */
+.photo-box {
+  display: inline-block;
+  width: 300px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  padding-left: 8px;
+  border: 2px solid var(--blue-strong);
+  transform: translate(110px,30px);
+  border: 2px solid var(--primary);
 
-    border:2px solid var(--primary);
+  border-radius: 18px;
 
-    border-radius:18px;
+  background: rgba(0, 10, 20, 0.35);
 
-    background:rgba(0,10,20,.35);
-
-    backdrop-filter:blur(12px);
-     box-shadow:
-
+  backdrop-filter: blur(12px);
+  box-shadow:
     0 0 8px var(--primary),
-
     0 0 18px var(--glow-soft),
-
-    inset 0 0 20px rgba(0,216,255,.18);
-     transition:
-        box-shadow .3s ease;
-    transform-style: preserve-3d;
-
+    inset 0 0 20px rgba(0, 216, 255, 0.18);
+  transition: box-shadow 0.3s ease;
+  transform-style: preserve-3d;
 }
-.photo-box:hover{
-    box-shadow:
-        0 0 20px var(--primary),
-        0 0 45px var(--glow-soft);
-
+.photo-box:hover {
+  .photo1{
+    opacity: 1;
+    transform: scale(1.1);
+    top: 12px;
+    left: -12px;
+    
+   
+  }
+  .photo{
+    opacity: 0.2;
+    filter:none
+  }
+  box-shadow:
+    0 0 20px var(--primary),
+    0 0 45px var(--glow-soft);
 }
-.grid{
+.grid {
+  position: absolute;
+  inset: 0;
 
-    position:absolute;
-    inset:0;
-
-    background:
+  background:
     repeating-linear-gradient(
+      transparent,
+      transparent 23px,
 
-        transparent,
-
-        transparent 23px,
-
-        rgba(0,216,255,.05) 24px
-
+      rgba(0, 216, 255, 0.05) 24px
     ),
-
     repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 23px,
 
-        90deg,
-
-        transparent,
-
-        transparent 23px,
-
-        rgba(0,216,255,.05) 24px
-
+      rgba(0, 216, 255, 0.05) 24px
     );
-
 }
 
-.photo{
-    height: 450px;
-    /* border: 1px solid blue; */
-    z-index: 1000;
-   filter:
-        drop-shadow(0 0 2px var(--glow-strong))
-        drop-shadow(0 0 6px var(--glow-soft));
+.photo {
+  display: block;
+
+  height: 450px;
+  /* border: 1px solid blue; */
+  z-index: 1000;
+  filter: drop-shadow(0 0 2px var(--glow-strong))
+    drop-shadow(0 0 6px var(--glow-soft));
+  transition: all 1s ease;
 }
-.photo:hover{
-    
-}
-/* .scan-line{
-
-    position:absolute;
-
-    left:0;
-
-    width:310px;
-    
-    height:3px;
-
-    background:var(--glow-soft);
-
-    box-shadow:
-
-        0 0 12px var(--glow-medium),
-
-        0 0 24px var(--glow-medium);
-    animation:scan 4s linear infinite alternate;
-
-}
-@keyframes scan{
-
-    from{
-
-        top:10px;
-
-    }
-
-    to{
-
-        top:95%;
-
-    }
-    
-
-} */
-.intro2{
-flex: 1;
-/* background-color: blue; */
+.photo1 {
+  position: absolute;
+  top: 10px; /* Align to top edge of container */
+  left: 8px;
+  height: 450px;
+  z-index: 0;
+  opacity: 0;
+   filter: drop-shadow(0 0 5px var(--glow-strong))
+    drop-shadow(0 0 12px var(--glow-soft));
+  transition: all 1s ease;
 }
 
-.text1{
-    font-size: 50px;
-    padding: none;
-    transform: translateY(10px);
-    color: white;
+.intro2 {
+    /* background-color: red;
+  opacity: 0.5; */
+  flex: 1;
+}
+
+.text1 {
+  font-size: 20px;
+  padding: none;
+  transform: translateY(10px);
+  color: white;
+}
+.text2{
+  font-size: 20px;
 }
