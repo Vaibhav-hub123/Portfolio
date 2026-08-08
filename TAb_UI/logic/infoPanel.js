@@ -82,18 +82,24 @@ export function openInfoPanel(data, onClose) {
   onCloseCallback = onClose ?? null;
   titleEl.textContent = data?.title ?? data?.name ?? "UNKNOWN";
   panel.classList.add("open");
-  loadPanel(data.name);  
+  loadPanel(data.name);
   requestAnimationFrame(() => {
     centerPanel();
   });
 }
 async function loadPanel(name) {
+  const html = await fetch(`/TAb_UI/panels/${name}.html`).then((r) => r.text());
 
-    const html = await fetch(`/TAb_UI/panels/${name}.html`)
-        .then(r => r.text());
+  bodyEl.innerHTML = html;
+  initOriginPanel();
+    const text1 = bodyEl.querySelector(".text1");
+    const text2 = bodyEl.querySelector(".text2");
+    const text3 = bodyEl.querySelector(".text3");
 
-    bodyEl.innerHTML = html;
-    initOriginPanel();
+    if (text1) text1.style.visibility = "hidden";
+    if (text2) text2.style.visibility = "hidden";
+    if (text3) text3.style.visibility = "hidden";
+  initOriginTyping();
 }
 export function hideInfoPanel() {
   onCloseCallback = null;
@@ -105,12 +111,11 @@ export function isInfoPanelOpen() {
 }
 
 function initOriginPanel() {
+  const card = document.querySelector(".photo-container");
 
-    const card = document.querySelector(".photo-container");
+  if (!card) return;
 
-    if (!card) return;
-
-    card.addEventListener("mousemove", (e) => {
+  card.addEventListener("mousemove", (e) => {
     console.log("moving");
 
     const rect = card.getBoundingClientRect();
@@ -124,22 +129,186 @@ function initOriginPanel() {
     const rotateY = ((x - centerX) / centerX) * 10;
     const rotateX = ((centerY - y) / centerY) * 10;
 
-    card.style.transform =
-        `perspective(1000px)
+    card.style.transform = `perspective(1000px)
          rotateX(${rotateX}deg)
          rotateY(${rotateY}deg)
          scale(1.02)`;
+  });
 
-});
-
-card.addEventListener("mouseleave", () => {
-
-    card.style.transform =
-        `perspective(1000px)
+  card.addEventListener("mouseleave", () => {
+    card.style.transform = `perspective(1000px)
          rotateX(0deg)
          rotateY(0deg)
          scale(1)`;
+  });
+}
 
-});
+function initOriginTyping() {
 
+    const text1 = bodyEl.querySelector(".text1");
+    const text2 = bodyEl.querySelector(".text2");
+    const text3 = bodyEl.querySelector(".text3");
+
+    if (!text1 || !text2 || !text3) return;
+
+    const typingSpeed = 35;
+    const markerTime = 50;
+    const linePause = 500;
+
+    function wait(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+
+    function createCursor() {
+        const cursor = document.createElement("span");
+        cursor.className = "typing-cursor";
+        cursor.textContent = "▌";
+        return cursor;
+    }
+
+
+    async function typeElement(element) {
+        const text = element.textContent.trim();
+        element.textContent = "";
+        const cursor = createCursor();
+        element.appendChild(cursor);
+        for (const character of text) {
+            await wait(markerTime);
+            const characterNode =
+                document.createTextNode(character);
+            element.insertBefore(
+                characterNode,
+                cursor
+            );
+            await wait(typingSpeed);
+        }
+        cursor.remove();
+
+    }
+
+
+    async function typeText2() {
+        const whiteText = "I'm";
+        const normalText = " Vaibhav Agrahari";
+        text2.innerHTML = "";
+        const whiteSpan =
+            document.createElement("span");
+        whiteSpan.style.color = "white";
+        const normalSpan =
+            document.createElement("span");
+        const cursor =
+            createCursor();
+        text2.appendChild(whiteSpan);
+        text2.appendChild(normalSpan);
+        text2.appendChild(cursor);
+        for (const character of whiteText) {
+            await wait(markerTime);
+            whiteSpan.appendChild(
+                document.createTextNode(character)
+            );
+            await wait(typingSpeed);
+        }
+        for (const character of normalText) {
+            await wait(markerTime);
+
+            normalSpan.appendChild(
+                document.createTextNode(character)
+            );
+
+            await wait(typingSpeed+10);
+        }
+
+       cursor.remove();
+    }
+
+
+    /*
+     * TEXT 3
+     */
+
+   async function typeText3() {
+
+    const lines = text3.querySelectorAll("span");
+    const lineTexts = [];
+    lines.forEach(line => {
+        lineTexts.push(line.textContent.trim());
+        line.textContent = "";
+    });
+
+    for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+        const text = lineTexts[i];
+
+        const cursor = createCursor();
+        line.appendChild(cursor);
+
+        for (const character of text) {
+            cursor.style.opacity = "1";
+
+            await wait(markerTime-25);
+            line.insertBefore(
+                document.createTextNode(character),
+                cursor
+            );
+
+
+            await wait(typingSpeed);
+        }
+
+
+        /*
+         * Line finished.
+         *
+         * Remove cursor completely.
+         */
+
+        cursor.remove();
+
+
+        /*
+         * Pause before next line
+         */
+
+        await wait(linePause);
+    }
+}
+
+
+    /*
+     * MAIN SEQUENCE
+     */
+
+    async function startTyping() {
+
+        /*
+         * Hello
+         */
+        text1.style.visibility = "visible";
+
+        await typeElement(text1);
+
+        await wait(linePause);
+
+
+        /*
+         * Name
+         */
+        text2.style.visibility = "visible";
+
+        await typeText2();
+
+        await wait(linePause);
+
+
+        /*
+         * Description
+         */
+        text3.style.visibility = "visible";
+
+        await typeText3();
+    }
+
+
+    startTyping();
 }

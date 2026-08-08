@@ -11,7 +11,6 @@ body {
 
   height: 100vh;
   font-family: "Orbitron", sans-serif;
-
 }
 :root {
   --primary: #00d8ff;
@@ -108,7 +107,7 @@ body {
   /* background-color: blue;
   opacity: 0.5; */
   justify-content: center;
-  transform: translate(100px,100px);
+  transform: translate(100px, 100px);
 }
 .photo-container {
   flex: 1;
@@ -124,7 +123,7 @@ body {
   padding-bottom: 10px;
   padding-left: 8px;
   border: 2px solid var(--blue-strong);
-  transform: translate(110px,30px);
+  transform: translate(110px, 30px);
   border: 2px solid var(--primary);
 
   border-radius: 18px;
@@ -140,17 +139,15 @@ body {
   transform-style: preserve-3d;
 }
 .photo-box:hover {
-  .photo1{
+  .photo1 {
     opacity: 1;
     transform: scale(1.1);
     top: 12px;
     left: -12px;
-    
-   
   }
-  .photo{
+  .photo {
     opacity: 0.2;
-    filter:none
+    filter: none;
   }
   box-shadow:
     0 0 20px var(--primary),
@@ -193,23 +190,67 @@ body {
   height: 450px;
   z-index: 0;
   opacity: 0;
-   filter: drop-shadow(0 0 5px var(--glow-strong))
+  filter: drop-shadow(0 0 5px var(--glow-strong))
     drop-shadow(0 0 12px var(--glow-soft));
   transition: all 1s ease;
 }
 
 .intro2 {
-    /* background-color: red;
+  /* background-color: red;
   opacity: 0.5; */
   flex: 1;
+}
+.intro-container {
+  position: relative;
 }
 
 .text1 {
   font-size: 20px;
-  padding: none;
+  padding: 0;
   transform: translateY(10px);
   color: white;
 }
-.text2{
-  font-size: 20px;
+.text2 .white {
+  color: white;
+}
+.text3 {
+  font-size: 12px;
+  transform: translateY(50px);
+  color: white;
+  font-family: "Courier New", Courier, monospace;
+  margin: 0;
+}
+.text3 span {
+  .text3 span {
+    display: block;
+  }
+}
+.typing-cursor {
+    display: inline-block;
+
+    color: inherit;
+
+    font-family: "Courier New", monospace;
+    font-weight: bold;
+
+    margin-left: 1px;
+
+    text-shadow:
+        0 0 5px var(--primary),
+        0 0 10px var(--primary);
+
+    animation: cursorBlink 0.6s infinite;
+}
+
+@keyframes cursorBlink {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.2;
+    }
+
 }
