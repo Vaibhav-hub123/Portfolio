@@ -282,7 +282,7 @@ body {
   animation: sweepMove 6s linear infinite;
 }
 @keyframes sweepMove {
-  0% { background-position: 0 -220px; }
+  0% { background-position: 0 -210px; }
   100% { background-position: 0 100vh; }
 }
 .micro-decor line {
