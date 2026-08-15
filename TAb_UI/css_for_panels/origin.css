@@ -80,7 +80,8 @@ body {
   fill: none;
   stroke: var(--glow-strong);
   stroke-width: 2;
-  opacity: 0.8;
+  opacity: 0.95;
+  filter: drop-shadow(0 0 3px var(--primary));
 }
 .hud rect {
   fill: none;
@@ -88,11 +89,11 @@ body {
   stroke-width: 1;
 }
 .screen-decor {
-  opacity: 0.8;
+  opacity: 0.95;
 }
-/* NEW: sparser, dimmer group for scattered micro-decor so it doesn't compete visually */
+/* Brighter, still slightly sparser group for scattered micro-decor */
 .micro-decor {
-  opacity: 0.45;
+  opacity: 0.65;
 }
 .circle_line1 {
   fill: none;
@@ -104,6 +105,27 @@ body {
   fill: white;
   filter: drop-shadow(0 0 3px var(--primary)) drop-shadow(0 0 8px var(--primary));
 }
+
+/* NEW: crosshair / plus marker decorations for extra HUD detail */
+.plus-decor {
+  opacity: 0.7;
+  filter: drop-shadow(0 0 2px var(--primary)) drop-shadow(0 0 6px var(--glow-soft));
+}
+.plus-decor line {
+  stroke: var(--glow-strong);
+  stroke-width: 1.5;
+}
+
+/* NEW: small hollow diamond-free corner ticks (horizontal/vertical only) */
+.tick-decor {
+  opacity: 0.75;
+  filter: drop-shadow(0 0 2px var(--primary));
+}
+.tick-decor line {
+  stroke: var(--glow-medium);
+  stroke-width: 1.5;
+}
+
 .content {
   color: var(--primary);
   position: relative;
@@ -255,13 +277,13 @@ body {
 
 .micro-decor line {
   stroke-width: 1;
-  opacity: 0.6;
+  opacity: 0.75;
 }
 .micro-decor rect {
-  opacity: 0.5;
+  opacity: 0.65;
 }
 .micro-decor circle {
-  opacity: 0.7;
+  opacity: 0.85;
 }
 
 /* NEW: faint scanning sweep line across whole panel */
@@ -285,25 +307,15 @@ body {
   0% { background-position: 0 -210px; }
   100% { background-position: 0 100vh; }
 }
-.micro-decor line {
-  stroke-width: 1;
-  opacity: 0.6;
-}
-.micro-decor rect {
-  opacity: 0.5;
-}
-.micro-decor circle {
-  opacity: 0.7;
-}
 
-/* NEW: glow for scattered decorations */
+/* NEW: brighter glow for scattered decorations */
 .micro-decor {
-  filter: drop-shadow(0 0 2px var(--primary))
-    drop-shadow(0 0 5px var(--glow-soft));
+  filter: drop-shadow(0 0 3px var(--primary))
+    drop-shadow(0 0 7px var(--glow-medium));
 }
 
-/* optional: give the tick rulers / corner brackets a touch of glow too */
+/* corner brackets / tick rulers get a touch more glow too */
 .screen-decor {
-  opacity: 0.8;
-  filter: drop-shadow(0 0 2px var(--glow-soft));
+  opacity: 0.95;
+  filter: drop-shadow(0 0 3px var(--primary)) drop-shadow(0 0 6px var(--glow-soft));
 }
