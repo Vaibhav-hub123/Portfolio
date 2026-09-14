@@ -5,14 +5,12 @@
   z-index: 100;
   pointer-events: none;
 }
-.hudRoot{
+.hudRoot {
+  position: absolute;
 
-    position:absolute;
-
-    inset:0;
-    transform: scale(1);
-    pointer-events:none;
-
+  inset: 0;
+  transform: scale(1);
+  pointer-events: none;
 }
 :root {
   --primary: #00d8ff;
@@ -29,7 +27,6 @@
   --blue-soft: rgba(0, 119, 255, 0.25);
   --blue-medium: rgba(0, 119, 255, 0.3);
   --blue-strong: rgba(0, 119, 255, 0.45);
-
 }
 
 .top-bar {
@@ -53,14 +50,18 @@
     var(--panel-middle),
     var(--panel-right)
   );
-  backdrop-filter: blur(22px);
+  backdrop-filter: url(#glassDistortion) blur(6px) saturate(160%)
+    brightness(1.05);
+  -webkit-backdrop-filter: blur(14px) saturate(160%) brightness(1.05);
   border: 1px solid var(--border);
   box-shadow:
     0 0 12px var(--glow-medium),
     0 0 40px var(--blue-medium),
     0 0 80px rgba(0, 119, 255, 0.15),
-    inset 0 0 20px rgba(0, 221, 255, 0.08);
-  transition: width .35s ease;
+    inset 0 0 20px rgba(0, 221, 255, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.35),
+    inset 0 -6px 10px rgba(0, 0, 0, 0.25);
+  transition: width 0.35s ease;
 }
 .top-bar::before {
   content: "";
@@ -77,6 +78,22 @@
   background: radial-gradient(circle, var(--panel-middle), transparent 70%);
   filter: blur(25px);
   z-index: -1;
+}
+.top-bar .glassSheen {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border-radius: inherit;
+  background: linear-gradient(
+    115deg,
+    rgba(255, 255, 255, 0.28) 0%,
+    rgba(255, 255, 255, 0.06) 22%,
+    rgba(255, 255, 255, 0) 45%,
+    rgba(255, 255, 255, 0) 70%,
+    rgba(255, 255, 255, 0.1) 100%
+  );
+  mix-blend-mode: overlay;
 }
 .shine {
   position: absolute;
@@ -175,7 +192,6 @@
   aspect-ratio: 800/1300;
   overflow: visible;
   display: none; /* hidden by default */
-
 }
 .arc-line {
   fill: none;
@@ -247,7 +263,7 @@
   box-shadow: 0 0 15px #ff5555;
 }
 
-.roboNavHud{
+.roboNavHud {
   position: absolute;
   left: 12%;
   bottom: 5%;
@@ -257,13 +273,12 @@
   width: 770px;
   padding: 10px;
   transform-origin: bottom left;
-    transform: scale(1);
+  transform: scale(1);
 
   transition: all 0.5s ease;
-
 }
-@media(max-width:1500px){
-  .roboNavHud{
+@media (max-width: 1500px) {
+  .roboNavHud {
     transform: scale(0.75);
   }
 }
@@ -274,7 +289,7 @@
   /* left: 300px;
   bottom: 80px; */
   width: 200px;
-  aspect-ratio: 215 / 205; 
+  aspect-ratio: 215 / 205;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -290,7 +305,7 @@
 }
 
 #robotAssistant svg {
-  width:100%;
+  width: 100%;
   height: 100%;
   /* outline: 2px solid lime; */
 }
@@ -311,18 +326,17 @@
 .scanner {
   pointer-events: auto;
   position: absolute;
-  right:clamp(20px,12vw,230px);
+  right: clamp(20px, 12vw, 230px);
 
-bottom:clamp(20px,4vh,62px);
+  bottom: clamp(20px, 4vh, 62px);
 
-width:clamp(360px,35vw,550px);
+  width: clamp(360px, 35vw, 550px);
 
-height:auto;
+  height: auto;
 
-aspect-ratio:550/260;
+  aspect-ratio: 550/260;
 
-transform-origin:bottom right;
-
+  transform-origin: bottom right;
 
   overflow: hidden;
 }
@@ -337,9 +351,9 @@ transform-origin:bottom right;
   overflow: hidden;
   top: 9%;
   left: 5%;
-  width:clamp(150px,12vw,200px);
+  width: clamp(150px, 12vw, 200px);
 
-height:clamp(150px,12vw,200px);
+  height: clamp(150px, 12vw, 200px);
   border-radius: 50%;
   background:
     radial-gradient(
@@ -458,7 +472,7 @@ height:clamp(150px,12vw,200px);
   align-items: center;
 
   font-family: Orbitron, sans-serif;
-  font-size:clamp(12px,.95vw,18px);
+  font-size: clamp(12px, 0.95vw, 18px);
   font-weight: 500;
 
   color: var(--primary);
@@ -475,7 +489,7 @@ height:clamp(150px,12vw,200px);
 .dots {
   display: inline-block;
   width: 3ch;
-  color:var(--primary);
+  color: var(--primary);
 }
 
 .dots::before {
@@ -515,7 +529,7 @@ height:clamp(150px,12vw,200px);
 }
 .foundText {
   font-family: Orbitron, sans-serif;
-  font-size:clamp(16px,1.2vw,22px);
+  font-size: clamp(16px, 1.2vw, 22px);
   font-weight: 700;
 
   letter-spacing: 4px;
@@ -532,7 +546,7 @@ height:clamp(150px,12vw,200px);
 .entityName {
   font-family: Orbitron, sans-serif;
 
-font-size:clamp(11px,.9vw,15px);
+  font-size: clamp(11px, 0.9vw, 15px);
 
   color: hsl(from var(--primary) h s 88%);
 
@@ -545,7 +559,7 @@ font-size:clamp(11px,.9vw,15px);
 
   font-family: Orbitron, sans-serif;
 
-  font-size:clamp(10px,.8vw,14px);
+  font-size: clamp(10px, 0.8vw, 14px);
 
   color: hsl(from var(--primary) h s 75%);
 
@@ -588,12 +602,11 @@ font-size:clamp(11px,.9vw,15px);
   transition-delay: 0.5s;
 }
 
-
 /* ================================================= */
 /*                RESPONSIVE HUD                      */
 /* ================================================= */
 
- /* @media (max-width:1600px){
+/* @media (max-width:1600px){
    .top-bar{
     width: 1152px;
   }

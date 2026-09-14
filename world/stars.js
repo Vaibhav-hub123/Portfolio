@@ -3,27 +3,6 @@ const loader = new THREE.TextureLoader(); // make a loader object its job is to 
 
 const starTexture = loader.load("../assets/textures/star.png"); // load the star texture
 
-/**
- * create a layer of stars
- *
- * VISUAL CHANGE: the old version scattered points in a CUBE
- * ((Math.random()-0.5)*3000 on each axis). That clusters extra density toward the
- * cube's corners and gives no sense of "this star is far, that one is near" - every
- * layer just looked like a denser/sparser version of the same flat noise.
- *
- * Now each layer is a SPHERICAL SHELL (radiusMin -> radiusMax), so different layers
- * genuinely sit at different distances from the camera - that's most of what "depth
- * perception" in a star field actually is. Combined with different point sizes per
- * layer (already how the old code worked) you get: tiny+dim+far, then bigger+closer.
- *
- * VISUAL CHANGE: per-star brightness variation via vertex colors. PointsMaterial
- * supports `vertexColors: true` natively, so this is free at runtime (no shader, no
- * per-frame cost) - it just multiplies the base color per-vertex. That's what gives
- * "occasional brighter stars" instead of every star in a layer being identical.
- *
- * FUNCTIONAL FIX: the original function accepted minSize/maxSize but never used them
- * (size was hardcoded to 2). They're now actually used (averaged) to size the layer.
- */
 export function createStars(scene, count, minSize, maxSize, color, options = {}) {
   const {
     radiusMin = 400,

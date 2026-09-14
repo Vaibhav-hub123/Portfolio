@@ -4,7 +4,7 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
+  min-height: 100vh;
   font-family: "Orbitron", sans-serif;
 }
 :root {
@@ -27,6 +27,7 @@ body {
   position: relative;
   width: 100%;
   height: 100%;
+  min-height: 100vh;
   overflow: hidden;
 }
 .noise {
@@ -39,7 +40,7 @@ body {
   z-index: 1;
 }
 
-/* NEW: full-page fine grid, sits behind everything but above background */
+/* full-page fine grid, sits behind everything but above background */
 .full-grid {
   position: absolute;
   inset: 0;
@@ -50,7 +51,7 @@ body {
     repeating-linear-gradient(90deg, transparent, transparent 39px, rgba(0, 216, 255, 0.045) 40px);
 }
 
-/* NEW: vignette to darken edges/corners so center content pops */
+/* vignette to darken edges/corners so center content pops */
 .vignette {
   position: absolute;
   inset: 0;
@@ -80,7 +81,9 @@ body {
   fill: none;
   stroke: var(--glow-strong);
   stroke-width: 2;
-  opacity: 0.95;
+  /* Toned down from .95 — this was competing with the foreground text for
+     attention; the HUD frame should read as context, not focal point. */
+  opacity: 0.85;
   filter: drop-shadow(0 0 3px var(--primary));
 }
 .hud rect {
@@ -88,13 +91,32 @@ body {
   stroke: var(--glow-medium);
   stroke-width: 1;
 }
+
+/* Was declared twice (once here, once further down with an added filter) —
+   merged into a single rule. */
 .screen-decor {
-  opacity: 0.95;
+  opacity: 0.9;
+  filter: drop-shadow(0 0 3px var(--primary)) drop-shadow(0 0 6px var(--glow-soft));
 }
-/* Brighter, still slightly sparser group for scattered micro-decor */
+
+/* Was also declared twice (base opacity, then line/rect/circle refinements,
+   then a second top-level block adding a filter) — consolidated below into
+   one place instead of three. */
 .micro-decor {
   opacity: 0.65;
+  filter: drop-shadow(0 0 3px var(--primary)) drop-shadow(0 0 7px var(--glow-medium));
 }
+.micro-decor line {
+  stroke-width: 1;
+  opacity: 0.75;
+}
+.micro-decor rect {
+  opacity: 0.65;
+}
+.micro-decor circle {
+  opacity: 0.85;
+}
+
 .circle_line1 {
   fill: none;
   stroke: var(--glow-strong);
@@ -106,7 +128,7 @@ body {
   filter: drop-shadow(0 0 3px var(--primary)) drop-shadow(0 0 8px var(--primary));
 }
 
-/* NEW: crosshair / plus marker decorations for extra HUD detail */
+/* crosshair / plus marker decorations for extra HUD detail */
 .plus-decor {
   opacity: 0.7;
   filter: drop-shadow(0 0 2px var(--primary)) drop-shadow(0 0 6px var(--glow-soft));
@@ -116,7 +138,7 @@ body {
   stroke-width: 1.5;
 }
 
-/* NEW: small hollow diamond-free corner ticks (horizontal/vertical only) */
+/* small hollow diamond-free corner ticks (horizontal/vertical only) */
 .tick-decor {
   opacity: 0.75;
   filter: drop-shadow(0 0 2px var(--primary));
@@ -136,9 +158,11 @@ body {
 .profile {
   display: flex;
   justify-content: center;
+  align-items: center;
   perspective: 1000px;
   height: 600px;
   transform: translateY(-20px);
+  gap: 40px;
 }
 .intro {
   flex: 1;
@@ -146,8 +170,11 @@ body {
   transform: translate(100px, 100px);
 }
 .photo-container {
-  flex: 1;
+  /* Was declared twice (`flex: 1;` then `flex: 1.75;`) — the first was
+     dead code; kept the intended ratio. */
   flex: 1.75;
+  display: flex;
+  justify-content: center;
 }
 
 .photo-box {
@@ -156,34 +183,42 @@ body {
   padding-top: 10px;
   padding-bottom: 10px;
   padding-left: 8px;
-  border: 2px solid var(--blue-strong);
-  transform: translate(110px, 30px);
+  /* Was declared twice (once with --blue-strong, once with --primary) —
+     the first was dead code; kept the visible one. */
   border: 2px solid var(--primary);
   border-radius: 18px;
   background: rgba(0, 10, 20, 0.35);
   backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   box-shadow:
     0 0 8px var(--primary),
     0 0 18px var(--glow-soft),
     inset 0 0 20px rgba(0, 216, 255, 0.18);
   transition: box-shadow 0.3s ease;
+  transform: translate(110px, 30px);
   transform-style: preserve-3d;
+  position: relative;
 }
+
+/* Flattened from CSS-nesting syntax (`.photo-box:hover { .photo1 {...} }`)
+   to plain selectors — the nested form only works in browsers with native
+   CSS Nesting support; this reads identically everywhere. */
 .photo-box:hover {
-  .photo1 {
-    opacity: 1;
-    transform: scale(1.1);
-    top: 12px;
-    left: -12px;
-  }
-  .photo {
-    opacity: 0.2;
-    filter: none;
-  }
   box-shadow:
     0 0 20px var(--primary),
     0 0 45px var(--glow-soft);
 }
+.photo-box:hover .photo1 {
+  opacity: 1;
+  transform: scale(1.1);
+  top: 12px;
+  left: -12px;
+}
+.photo-box:hover .photo {
+  opacity: 0.2;
+  filter: none;
+}
+
 .grid {
   position: absolute;
   inset: 0;
@@ -210,6 +245,42 @@ body {
   transition: all 1s ease;
 }
 
+/* Referenced in the HTML (`<div class="scan-line">`) but never styled —
+   added a subtle vertical sweep scoped to the photo, distinct from the
+   panel-wide .scan-sweep below. */
+.scan-line {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  border-radius: inherit;
+}
+.scan-line::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 40%;
+  background: linear-gradient(
+    to bottom,
+    transparent 0%,
+    var(--glow-soft) 45%,
+    var(--glow-medium) 50%,
+    var(--glow-soft) 55%,
+    transparent 100%
+  );
+  opacity: 0.25;
+  animation: scanLineSweep 5s ease-in-out infinite;
+}
+@keyframes scanLineSweep {
+  0% {
+    top: -40%;
+  }
+  100% {
+    top: 100%;
+  }
+}
+
 .intro2 {
   flex: 1;
 }
@@ -222,16 +293,35 @@ body {
   padding: 0;
   transform: translateY(10px);
   color: white;
+  letter-spacing: 1px;
+}
+
+/* .text2 previously had no size/weight of its own — the name (the primary
+   heading of this whole panel) was rendering at the browser default text
+   size. Given real hierarchy here: large, confident, still restrained. */
+.text2 {
+  display: block;
+  font-size: clamp(30px, 3.6vw, 46px);
+  font-weight: 600;
+  letter-spacing: 1px;
+  line-height: 1.15;
+  margin-top: 6px;
+  color: var(--primary);
 }
 .text2 .white {
   color: white;
 }
+
 .text3 {
-  font-size: 12px;
+  /* Slightly larger than the original 12px for legibility; still reads as
+     a monospace system read-out rather than body copy. */
+  font-size: 13.5px;
+  line-height: 1.7;
   transform: translateY(50px);
-  color: white;
+  color: rgba(255, 255, 255, 0.82);
   font-family: "Courier New", Courier, monospace;
   margin: 0;
+  max-width: 34ch;
 }
 .text3 span {
   display: block;
@@ -248,11 +338,33 @@ body {
   animation: cursorBlink 0.6s infinite;
 }
 
-@keyframes cursorBlink {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.2; }
+/* Referenced in the HTML but had no rule at all, so it rendered as static,
+   non-blinking text. Reuses the same blink used by the typing cursor so
+   the "waiting" cursor after typing finishes reads as the same UI element. */
+.system-cursor {
+  display: inline-block;
+  color: var(--primary);
+  text-shadow:
+    0 0 5px var(--primary),
+    0 0 10px var(--primary);
+  animation: cursorBlink 0.6s infinite;
 }
 
+@keyframes cursorBlink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.2;
+  }
+}
+
+/* This overlay existed in the stylesheet (transparent, unused) with no
+   element in the HTML rendering it, matching a JS function
+   (`initOriginDistortion`) that was called but never defined. Both halves
+   are now connected: infoPanel.js toggles `.is-active` on this element
+   for a brief boot-in flicker when a panel's content loads. */
 .origin-distortion {
   position: absolute;
   inset: 0;
@@ -262,7 +374,29 @@ body {
   background: transparent;
   pointer-events: none;
   z-index: 5;
-  opacity: 1;
+  opacity: 0;
+}
+.origin-distortion.is-active {
+  animation: originDistortionFlicker 0.5s ease-out;
+}
+@keyframes originDistortionFlicker {
+  0% {
+    opacity: 0.5;
+    background: linear-gradient(0deg, transparent 48%, var(--glow-soft) 50%, transparent 52%);
+    filter: blur(1px);
+  }
+  40% {
+    opacity: 0.25;
+  }
+  100% {
+    opacity: 0;
+    filter: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .origin-distortion.is-active {
+    animation: none;
+  }
 }
 
 .noise2 {
@@ -275,18 +409,11 @@ body {
   z-index: 1;
 }
 
-.micro-decor line {
-  stroke-width: 1;
-  opacity: 0.75;
-}
-.micro-decor rect {
-  opacity: 0.65;
-}
-.micro-decor circle {
-  opacity: 0.85;
-}
-
-/* NEW: faint scanning sweep line across whole panel */
+/* faint scanning sweep line across whole panel — was fully defined but
+   never referenced by any element in the HTML. Wired it in (see
+   origin.html): it matches the brief's own "very subtle scan-line
+   movement" example of animation done well. Delete the element in the
+   HTML if you decide you don't want it. */
 .scan-sweep {
   position: absolute;
   inset: 0;
@@ -304,18 +431,197 @@ body {
   animation: sweepMove 6s linear infinite;
 }
 @keyframes sweepMove {
-  0% { background-position: 0 -210px; }
-  100% { background-position: 0 100vh; }
+  0% {
+    background-position: 0 -210px;
+  }
+  100% {
+    background-position: 0 100vh;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .scan-sweep {
+    animation: none;
+  }
 }
 
-/* NEW: brighter glow for scattered decorations */
-.micro-decor {
-  filter: drop-shadow(0 0 3px var(--primary))
-    drop-shadow(0 0 7px var(--glow-medium));
+/* ==========================================================================
+   Modern UI elements (status pill, focus tags, CTA buttons)
+   Added for this pass. All colors read from the theme variables above, so
+   blue/green/red switching applies to these automatically.
+   ========================================================================== */
+
+.status-cluster {
+  position: absolute;
+  top: 24px;
+  right: 32px;
+  z-index: 6;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--glass);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  font-size: 11px;
+  letter-spacing: 1.5px;
+  color: var(--primary);
 }
 
-/* corner brackets / tick rulers get a touch more glow too */
-.screen-decor {
-  opacity: 0.95;
-  filter: drop-shadow(0 0 3px var(--primary)) drop-shadow(0 0 6px var(--glow-soft));
+.status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--primary);
+  box-shadow: 0 0 6px var(--glow-medium);
+  animation: statusPulse 2.4s ease-in-out infinite;
+}
+@keyframes statusPulse {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.45;
+    transform: scale(0.8);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .status-dot {
+    animation: none;
+  }
+}
+
+.focus-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 18px;
+}
+.focus-tag {
+  padding: 5px 12px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--glass);
+  font-size: 12px;
+  letter-spacing: 0.5px;
+  color: var(--white);
+  opacity: 0.85;
+  transition:
+    border-color 0.2s ease-out,
+    opacity 0.2s ease-out;
+}
+.focus-tag:hover {
+  opacity: 1;
+  border-color: var(--primary);
+}
+
+.intro-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 26px;
+}
+.hud-btn {
+  display: inline-flex;
+  align-items: center;
+  padding: 10px 22px;
+  border-radius: 4px;
+  font-size: 13px;
+  letter-spacing: 1px;
+  text-decoration: none;
+  transition:
+    transform 0.15s ease-out,
+    box-shadow 0.2s ease-out,
+    background 0.2s ease-out;
+}
+.hud-btn--primary {
+  color: #001014;
+  background: var(--primary);
+  box-shadow: 0 0 18px var(--glow-soft);
+}
+.hud-btn--primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 0 26px var(--glow-medium);
+}
+.hud-btn--ghost {
+  color: var(--primary);
+  background: transparent;
+  border: 1px solid var(--border);
+}
+.hud-btn--ghost:hover {
+  transform: translateY(-1px);
+  border-color: var(--primary);
+  background: var(--glass);
+}
+.hud-btn:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .hud-btn:hover {
+    transform: none;
+  }
+}
+
+/* ==========================================================================
+   Responsive layout
+   The desktop composition relies on large fixed-pixel transforms
+   (.intro / .photo-box translate, .profile's fixed height) that were never
+   adapted for anything narrower than the original design canvas. Below
+   ~1100px the two-column layout stacks instead of shrinking in place.
+   ========================================================================== */
+
+@media (max-width: 1100px) {
+  .profile {
+    flex-direction: column;
+    height: auto;
+    min-height: 0;
+    padding: 72px 24px 48px;
+    transform: none;
+  }
+  .intro {
+    transform: none;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+  }
+  .intro-container {
+    text-align: left;
+  }
+  .photo-box {
+    transform: none;
+    margin: 0 auto;
+  }
+  .focus-tags,
+  .intro-actions {
+    justify-content: center;
+  }
+}
+
+@media (max-width: 640px) {
+  .content {
+    padding: 16px;
+  }
+  .status-cluster {
+    top: 14px;
+    right: 16px;
+    font-size: 10px;
+    padding: 5px 10px;
+  }
+  .photo-box {
+    width: 220px;
+  }
+  .photo,
+  .photo1 {
+    height: 320px;
+  }
+  .text3 {
+    max-width: none;
+  }
+  .intro-actions {
+    margin-top: 20px;
+  }
 }
