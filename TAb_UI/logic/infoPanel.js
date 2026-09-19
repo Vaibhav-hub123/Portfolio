@@ -14,9 +14,16 @@ function clamp(value, min, max) {
   return Math.min(Math.max(value, min), max);
 }
 
+function wait(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+function prefersReducedMotion() {
+  return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+}
+
 function centerPanel() {
   const width = panel.offsetWidth;
-  const height = panel.offsetHeight;
 
   panel.style.left = (window.innerWidth - width) / 2 + "px";
 }
@@ -62,7 +69,6 @@ function onPointerUp() {
 }
 
 function handleCloseClick() {
-  console.log("Clicked");
   const callback = onCloseCallback;
   onCloseCallback = null;
   panel.classList.remove("open");
@@ -121,14 +127,74 @@ export function isInfoPanelOpen() {
   return panel.classList.contains("open");
 }
 
+/*
+ * Brief flicker across the main HUD when a panel finishes loading its
+ * content. The element and keyframes already existed in origin.css
+ * (`.origin-distortion` / `originDistortionFlicker`) with nothing wiring
+ * them up — this is that connection.
+ */
+function initOriginDistortion() {
+  const el = document.querySelector(".origin-distortion");
+  if (!el || prefersReducedMotion()) return;
+
+  el.classList.remove("is-active");
+  // force reflow so the animation restarts if a panel is re-opened
+  void el.offsetWidth;
+  el.classList.add("is-active");
+  el.addEventListener("animationend", () => el.classList.remove("is-active"), {
+    once: true,
+  });
+}
+
+/*
+ * Smooth, physical mouse-follow tilt on the profile photo. Interpolates
+ * toward the pointer target each frame instead of snapping straight to
+ * it, and caps rotation to a subtle 4 degrees.
+ */
 function initOriginPanel() {
   const card = document.querySelector(".photo-container");
 
-  if (!card) return;
+  if (!card || prefersReducedMotion()) return;
 
-  card.addEventListener("mousemove", (e) => {
-    console.log("moving");
+  const maxRotate = 4;
+  const lerpFactor = 0.12;
+  const settleThreshold = 0.01;
 
+  let targetX = 0;
+  let targetY = 0;
+  let currentX = 0;
+  let currentY = 0;
+  let hovering = false;
+  let rafId = null;
+
+  function apply() {
+    card.style.transform = `perspective(1000px) rotateX(${currentY.toFixed(3)}deg) rotateY(${currentX.toFixed(3)}deg) scale(${hovering ? 1.015 : 1})`;
+  }
+
+  function tick() {
+    currentX += (targetX - currentX) * lerpFactor;
+    currentY += (targetY - currentY) * lerpFactor;
+    apply();
+
+    const settled =
+      Math.abs(targetX - currentX) < settleThreshold &&
+      Math.abs(targetY - currentY) < settleThreshold;
+
+    if (hovering || !settled) {
+      rafId = requestAnimationFrame(tick);
+    } else {
+      currentX = targetX;
+      currentY = targetY;
+      apply();
+      rafId = null;
+    }
+  }
+
+  function ensureLoop() {
+    if (rafId === null) rafId = requestAnimationFrame(tick);
+  }
+
+  card.addEventListener("pointermove", (e) => {
     const rect = card.getBoundingClientRect();
 
     const x = e.clientX - rect.left;
@@ -137,20 +203,18 @@ function initOriginPanel() {
     const centerX = rect.width / 2;
     const centerY = rect.height / 2;
 
-    const rotateY = ((x - centerX) / centerX) * 10;
-    const rotateX = ((centerY - y) / centerY) * 10;
+    targetX = ((x - centerX) / centerX) * maxRotate;
+    targetY = ((centerY - y) / centerY) * maxRotate;
 
-    card.style.transform = `perspective(1000px)
-         rotateX(${rotateX}deg)
-         rotateY(${rotateY}deg)
-         scale(1.02)`;
+    hovering = true;
+    ensureLoop();
   });
 
-  card.addEventListener("mouseleave", () => {
-    card.style.transform = `perspective(1000px)
-         rotateX(0deg)
-         rotateY(0deg)
-         scale(1)`;
+  card.addEventListener("pointerleave", () => {
+    hovering = false;
+    targetX = 0;
+    targetY = 0;
+    ensureLoop();
   });
 }
 
@@ -161,13 +225,10 @@ function initOriginTyping() {
 
   if (!text1 || !text2 || !text3) return;
 
-  const typingSpeed = 35;
-  const markerTime = 50;
-  const linePause = 500;
-
-  function wait(ms) {
-    return new Promise((resolve) => setTimeout(resolve, ms));
-  }
+  const typingSpeed = 20;
+  const markerTime = 30;
+  const linePause = 260;
+  const lineStagger = 90;
 
   function createCursor() {
     const cursor = document.createElement("span");
@@ -176,20 +237,21 @@ function initOriginTyping() {
     return cursor;
   }
 
-  async function typeElement(element) {
-    const text = element.textContent.trim();
-    element.textContent = "";
-    const cursor = createCursor();
-    element.appendChild(cursor);
-    for (const character of text) {
-      await wait(markerTime);
-      const characterNode = document.createTextNode(character);
-      element.insertBefore(characterNode, cursor);
-      await wait(typingSpeed);
-    }
-    cursor.remove();
+  // "Hello" — quick reveal rather than a slow character crawl.
+  async function revealText1(element) {
+    element.style.visibility = "visible";
+    element.style.opacity = "0";
+    element.style.transform = "translateY(8px)";
+    element.style.transition = `opacity 0.28s var(--ease-premium, ease), transform 0.28s var(--ease-premium, ease)`;
+    requestAnimationFrame(() => {
+      element.style.opacity = "1";
+      element.style.transform = "none";
+    });
+    await wait(280);
   }
 
+  // Name — kept as a type/reveal effect (this is the primary heading, it
+  // earns the extra beat) but noticeably brisker than before.
   async function typeText2() {
     const whiteText = "I'm";
     const normalText = " Vaibhav Agrahari";
@@ -201,6 +263,7 @@ function initOriginTyping() {
     text2.appendChild(whiteSpan);
     text2.appendChild(normalSpan);
     text2.appendChild(cursor);
+
     for (const character of whiteText) {
       await wait(markerTime);
       whiteSpan.appendChild(document.createTextNode(character));
@@ -208,83 +271,55 @@ function initOriginTyping() {
     }
     for (const character of normalText) {
       await wait(markerTime);
-
       normalSpan.appendChild(document.createTextNode(character));
-
-      await wait(typingSpeed + 10);
+      await wait(typingSpeed);
     }
 
     cursor.remove();
   }
 
-  /*
-   * TEXT 3
-   */
-  
-  async function typeText3() {
+  // Description — reveals line by line with opacity + translateY instead
+  // of typing every character; reads as intentional rather than a
+  // terminal emulator, and gets the full paragraph on screen much sooner.
+  async function revealText3Lines() {
     const lines = text3.querySelectorAll("span");
-    const lineTexts = [];
-    lines.forEach((line) => {
-      lineTexts.push(line.textContent.trim());
-      line.textContent = "";
-    });
 
-    for (let i = 0; i < lines.length; i++) {
-      const line = lines[i];
-      const text = lineTexts[i];
+    lines.forEach((line) => line.classList.add("line-reveal"));
+    await wait(20); // let the class apply before we start toggling it
 
-      const cursor = createCursor();
-      line.appendChild(cursor);
-
-      for (const character of text) {
-        cursor.style.opacity = "1";
-
-        await wait(markerTime - 25);
-        line.insertBefore(document.createTextNode(character), cursor);
-
-        await wait(typingSpeed);
-      }
-
-
-      cursor.remove();
-
-
-      await wait(linePause);
+    for (const line of lines) {
+      line.classList.add("is-visible");
+      await wait(lineStagger);
     }
+
+    await wait(linePause);
   }
 
-  /*
-   * MAIN SEQUENCE
-   */
-
   async function startTyping() {
-    /*
-     * Hello
-     */
+    if (prefersReducedMotion()) {
+      text1.style.visibility = "visible";
+      text2.style.visibility = "visible";
+      text3.style.visibility = "visible";
+      text3.querySelectorAll("span").forEach((line) => {
+        line.classList.remove("line-reveal");
+        line.classList.add("is-visible");
+      });
+      return;
+    }
+
     text1.style.visibility = "visible";
+    await revealText1(text1);
 
-    await typeElement(text1);
+    await wait(160);
 
-    await wait(linePause);
-
-    /*
-     * Name
-     */
     text2.style.visibility = "visible";
-
     await typeText2();
 
-    await wait(linePause);
+    await wait(160);
 
-    /*
-     * Description
-     */
     text3.style.visibility = "visible";
-
-    await typeText3();
+    await revealText3Lines();
   }
 
   startTyping();
 }
-
- 

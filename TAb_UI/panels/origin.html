@@ -19,15 +19,11 @@
       <div class="full-grid"></div>
       <div class="vignette"></div>
 
-      <!-- Was fully styled in origin.css but never present in the markup —
-           a slow, low-opacity sweep across the whole panel. -->
+      <!-- Slow, low-opacity sweep across the whole panel -->
       <div class="scan-sweep"></div>
 
-      <!-- Was styled as a transparent no-op in origin.css with no element
-           to render it, matching the previously undefined
-           initOriginDistortion() call in infoPanel.js. Now the two are
-           connected: infoPanel.js toggles `.is-active` here for a brief
-           flicker when panel content finishes loading. -->
+      <!-- infoPanel.js toggles `.is-active` here for a brief flicker
+           when panel content finishes loading -->
       <div class="origin-distortion"></div>
 
       <!-- Status readout: reads from the active theme, so it stays in
