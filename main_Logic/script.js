@@ -135,7 +135,7 @@ window.addEventListener(
     // Only use horizontal navigation
     e.preventDefault();
 
-    targetRotationY += e.deltaY * scrollSensitivity;
+    targetRotationY -= e.deltaY * scrollSensitivity;
   },
   { passive: false },
 );
@@ -152,7 +152,7 @@ window.addEventListener("mousemove", (e) => {
 
   const deltaX = e.clientX - lastMouseX;
 
-  targetRotationY -= deltaX * dragSensitivity;
+  targetRotationY += deltaX * dragSensitivity;
 
   lastMouseX = e.clientX;
 });
