@@ -1,3 +1,5 @@
+import { syncPhotoTheme } from "../../Theme/themeManager.js";
+
 const panel = document.getElementById("infoPanel");
 const header = panel.querySelector(".info-panel-header");
 const titleEl = panel.querySelector(".info-panel-title");
@@ -106,6 +108,7 @@ async function loadPanel(name) {
 
   bodyEl.innerHTML = html;
   initOriginPanel();
+   syncPhotoTheme();
   const text1 = bodyEl.querySelector(".text1");
   const text2 = bodyEl.querySelector(".text2");
   const text3 = bodyEl.querySelector(".text3");

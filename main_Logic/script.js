@@ -133,6 +133,8 @@ window.addEventListener(
   "wheel",
   (e) => {
     // Only use horizontal navigation
+    if (e.target.closest("#infoPanel")) return;
+
     e.preventDefault();
 
     targetRotationY -= e.deltaY * scrollSensitivity;

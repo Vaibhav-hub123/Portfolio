@@ -18,6 +18,8 @@ const themes = {
     blueSoft: "rgba(0,200,240,.25)",
     blueMedium: "rgba(0,200,240,.30)",
     blueStrong: "rgba(0,200,240,.45)",
+    photo: "assets/MyPhoto/blue.png",
+
   },
 
   green: {
@@ -39,6 +41,8 @@ const themes = {
     blueSoft: "rgba(0,200,120,.25)",
     blueMedium: "rgba(0,200,120,.30)",
     blueStrong: "rgba(0,200,120,.45)",
+    photo: "assets/MyPhoto/green.png",
+
   },
   red: {
     primary: "#ff5b5b",
@@ -59,6 +63,8 @@ const themes = {
     blueSoft: "rgba(255,40,40,.25)",
     blueMedium: "rgba(255,40,40,.35)",
     blueStrong: "rgba(255,40,40,.50)",
+    photo: "assets/MyPhoto/red.png",
+
   },
 };
 
@@ -80,6 +86,23 @@ export function applyTheme(name) {
   root.style.setProperty("--blue-soft", theme.blueSoft);
   root.style.setProperty("--blue-medium", theme.blueMedium);
   root.style.setProperty("--blue-strong", theme.blueStrong);
+  updatePhotos(theme);
+
 }
+
+function updatePhotos(theme) {
+  document.querySelectorAll(".photo, .photo1").forEach((img) => {
+    img.src = theme.photo;
+  });
+}
+
+export function syncPhotoTheme() {
+  updatePhotos(themes[currentTheme]);
+}
+
+export function getCurrentTheme() {
+  return currentTheme;
+}
+
 
 export { themes };
