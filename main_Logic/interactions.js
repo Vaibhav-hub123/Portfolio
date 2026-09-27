@@ -182,11 +182,14 @@ export function lookAtPlanet(camera, name) {
   if (!planet) return;
 
   planet.getWorldPosition(targetPos);
+  targetPos.y = camera.position.y; // keep the camera level with the planet, don't look up or down
   lookMatrix.lookAt(camera.position, targetPos, camera.up);
   navLookTarget = new THREE.Quaternion().setFromRotationMatrix(lookMatrix);
   navLooking = true;
 }
-
+export function isNavLooking() {
+  return navLooking;
+}
 
 //wrapper function currently not doing much but in the future has many uses 
 export function isFocusing() {

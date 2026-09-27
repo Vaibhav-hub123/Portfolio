@@ -9,6 +9,7 @@ import {
   lookAtPlanet,
   lookAtOrigin,
   isFocusing,
+  isNavLooking,
 } from "./interactions.js";
 import { initHUD } from "../Detector/Detector.js";
 import { applyTheme } from "../Theme/themeManager.js";
@@ -234,7 +235,7 @@ function animate() {
   requestAnimationFrame(animate);
 
   // Manual rotation is skipped while an auto-focus turn is in progress,so the two don't fight each other frame-to-frame.
-  if (!isFocusing()) {
+  if (!isFocusing() && !isNavLooking()) {
     if (rotateLeft) {
       targetRotationY += rotationSpeed;
     }
@@ -245,10 +246,11 @@ function animate() {
 
     // Smoothly move camera toward target rotation
     const rotationDifference = targetRotationY - currentRotationY;
-
     currentRotationY += rotationDifference * rotationSmoothness;
-
     camera.rotation.y = currentRotationY;
+  }else{
+    targetRotationY = camera.rotation.y; // Reset target rotation to current camera rotation when auto-focus is active
+    currentRotationY = camera.rotation.y; // Reset current rotation to current camera rotation when auto-focus is active
   }
 
   // adds a little rotation to all the planets next step -> make it so that different planets rotate with different speeds
