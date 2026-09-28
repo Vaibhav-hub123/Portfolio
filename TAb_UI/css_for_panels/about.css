@@ -1,0 +1,309 @@
+/* About — "profile dossier". Same tokens as the Origin panel (theme-aware),
+   scoped under .about so nothing leaks into the host page. */
+.about {
+  --a-p: var(--primary, #00d8ff);
+  --a-s: var(--secondary, #0077ff);
+  --a-ink: #e8f2ff;
+  --a-dim: rgba(205, 224, 255, 0.74);
+  --a-plate: #050c1c;
+  --a-line: color-mix(in srgb, var(--a-p) 38%, transparent);
+  --a-hair: color-mix(in srgb, var(--a-p) 14%, transparent);
+  --display: "Orbitron", system-ui, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, "Courier New", monospace;
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+
+  position: relative;
+  container: about / inline-size;
+  overflow-x: clip; /* clip, not hidden: keeps the sticky rail working */
+  padding: 28px 20px 56px;
+  color: var(--a-ink);
+  font: 400 0.9rem/1.7 var(--mono);
+  background:
+    radial-gradient(50% 40% at 100% 0%, color-mix(in srgb, var(--a-s) 22%, transparent), transparent 70%),
+    radial-gradient(40% 30% at 0% 100%, color-mix(in srgb, var(--a-p) 8%, transparent), transparent 70%),
+    #03060f;
+}
+.about *, .about *::before, .about *::after { box-sizing: border-box; }
+.ab-grid {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(var(--a-hair) 1px, transparent 1px),
+    linear-gradient(90deg, var(--a-hair) 1px, transparent 1px);
+  background-size: 40px 40px;
+  opacity: 0.45;
+  -webkit-mask-image: linear-gradient(to bottom, #000, transparent 70%);
+  mask-image: linear-gradient(to bottom, #000, transparent 70%);
+}
+.about h1, .about h2, .about h3, .about p, .about ul, .about ol, .about dl, .about dd { margin: 0; padding: 0; }
+.about ul, .about ol { list-style: none; }
+.about > * { position: relative; }
+
+/* ---------- Header / cover ---------- */
+.ab-head {
+  display: grid;
+  gap: 28px;
+  padding-bottom: 32px;
+  border-bottom: 1px solid var(--a-line);
+  animation: rise 0.7s var(--ease) both;
+}
+.ab-kicker {
+  font-size: 0.72rem;
+  letter-spacing: 0.18em;
+  color: var(--a-p);
+}
+.ab-title {
+  margin-top: 14px;
+  font: 800 clamp(1.7rem, 7.4cqi, 3.1rem) / 1.12 var(--display);
+  letter-spacing: 0.01em;
+  text-wrap: balance;
+}
+.ab-title em {
+  font-style: normal;
+  background: linear-gradient(100deg, color-mix(in srgb, var(--a-p) 60%, #fff), var(--a-p) 50%, var(--a-s));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.ab-lede { margin-top: 20px; max-width: 58ch; color: var(--a-dim); }
+.ab-reticle {
+  display: none;
+  width: 190px;
+  fill: none;
+  stroke: var(--a-line);
+  stroke-width: 1;
+}
+.ab-reticle .dot { fill: var(--a-p); stroke: none; }
+.ab-fields {
+  display: grid;
+  gap: 0;
+  grid-template-columns: 1fr 1fr;
+}
+.ab-fields div {
+  padding: 12px 14px 12px 0;
+  border-top: 1px solid var(--a-hair);
+}
+.ab-fields dt { font-size: 0.68rem; letter-spacing: 0.16em; color: var(--a-p); text-transform: uppercase; }
+.ab-fields dd { margin-top: 2px; font-size: 0.86rem; }
+.ab-placeholder {
+  display: inline-block;
+  padding: 0 8px;
+  border: 1px dashed var(--a-line);
+  color: var(--a-dim);
+}
+
+/* ---------- Layout: sticky index rail + content ---------- */
+.ab-layout { display: grid; gap: 24px; margin-top: 8px; }
+.ab-rail {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  display: flex;
+  gap: 8px;
+  margin: 0 -20px;
+  padding: 10px 20px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  background: rgba(3, 6, 15, 0.92);
+  border-bottom: 1px solid var(--a-hair);
+}
+.ab-rail a {
+  flex: none;
+  padding: 6px 12px;
+  border: 1px solid var(--a-line);
+  border-radius: 2px;
+  font-size: 0.74rem;
+  color: var(--a-ink);
+  text-decoration: none;
+  transition: background-color 0.2s, border-color 0.2s;
+}
+.ab-rail a span { margin-right: 8px; color: var(--a-p); }
+.ab-rail a:hover { background: color-mix(in srgb, var(--a-p) 12%, transparent); border-color: var(--a-p); }
+.ab-rail a:focus-visible, .ab-index li:focus-within { outline: 2px solid #fff; outline-offset: 2px; }
+
+.ab-main { display: grid; gap: 56px; padding-top: 16px; min-width: 0; }
+.ab-section { scroll-margin-top: 64px; animation: rise 0.7s var(--ease) both; }
+.ab-section:nth-child(2) { animation-delay: 0.08s; }
+.ab-section:nth-child(3) { animation-delay: 0.16s; }
+.ab-section:nth-child(4) { animation-delay: 0.24s; }
+.ab-h {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  font: 700 1.05rem var(--display);
+  letter-spacing: 0.06em;
+}
+.ab-h span { font: 500 0.74rem var(--mono); letter-spacing: 0.12em; color: var(--a-p); }
+.ab-h::after { content: ""; flex: 1; height: 1px; background: linear-gradient(90deg, var(--a-line), transparent); }
+.ab-note { margin-top: 10px; max-width: 60ch; font-size: 0.82rem; color: var(--a-dim); }
+
+/* ---------- Tags ---------- */
+.tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 2px 10px;
+  border: 1px solid var(--a-line);
+  border-radius: 2px;
+  font-size: 0.7rem;
+  letter-spacing: 0.06em;
+  color: var(--a-dim);
+  white-space: nowrap;
+}
+.tag--live { color: var(--a-ink); border-color: var(--a-p); }
+.tag--live::before { content: ""; width: 5px; height: 5px; border-radius: 50%; background: var(--a-p); box-shadow: 0 0 6px var(--a-p); }
+
+/* ---------- 01 Interests converge ---------- */
+.ab-connect { display: grid; gap: 0; margin-top: 24px; }
+.ab-lanes li {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 2px 14px;
+  padding: 14px 0 14px 22px;
+  border-left: 1px solid var(--a-line);
+}
+.ab-lanes li::before {
+  content: "";
+  position: absolute;
+  left: -3px;
+  top: 25px;
+  width: 5px;
+  height: 5px;
+  background: var(--a-p);
+}
+.ab-lanes b { font: 600 0.86rem var(--display); letter-spacing: 0.04em; }
+.ab-lanes span { font-size: 0.8rem; color: var(--a-dim); }
+.ab-sink {
+  margin-left: 0;
+  padding: 16px 18px;
+  border: 1px solid var(--a-p);
+  background: color-mix(in srgb, var(--a-p) 8%, var(--a-plate));
+  clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 14px 100%, 0 calc(100% - 14px));
+}
+.ab-sink b { display: block; font: 700 0.95rem var(--display); }
+.ab-sink span { font-size: 0.8rem; color: var(--a-dim); }
+
+/* ---------- 02 Status log ---------- */
+.ab-log { margin-top: 20px; border-top: 1px solid var(--a-line); }
+.ab-log li {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 4px 16px;
+  align-items: center;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--a-hair);
+  transition: background-color 0.2s, padding-left 0.25s var(--ease);
+}
+.ab-log li:hover { padding-left: 8px; background: color-mix(in srgb, var(--a-p) 5%, transparent); }
+.ab-log .tag { justify-self: start; min-width: 92px; justify-content: center; }
+.ab-log b { font: 600 0.9rem var(--display); }
+.ab-log i { grid-column: 1 / -1; font-style: normal; font-size: 0.8rem; color: var(--a-dim); }
+
+/* ---------- 03 Project index ---------- */
+.ab-index { margin-top: 20px; counter-reset: p; }
+.ab-index li {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 6px 16px;
+  padding: 18px 16px;
+  border: 1px solid var(--a-hair);
+  border-bottom-color: transparent;
+  background: linear-gradient(90deg, color-mix(in srgb, var(--a-p) 4%, transparent), transparent);
+  transition: border-color 0.25s, background-color 0.25s, transform 0.25s var(--ease);
+}
+.ab-index li:last-child { border-bottom-color: var(--a-hair); }
+.ab-index li::before {
+  content: "";
+  position: absolute;
+  left: -1px;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: var(--a-p);
+  transform: scaleY(0);
+  transform-origin: top;
+  transition: transform 0.3s var(--ease);
+}
+.ab-index li:hover { border-color: var(--a-line); background-color: color-mix(in srgb, var(--a-p) 7%, transparent); transform: translateX(4px); }
+.ab-index li:hover::before { transform: none; }
+.ab-index .n { font-size: 0.74rem; color: var(--a-p); padding-top: 4px; }
+.ab-index h3 { font: 700 1.05rem var(--display); letter-spacing: 0.04em; }
+.ab-index p { margin-top: 4px; font-size: 0.83rem; color: var(--a-dim); max-width: 56ch; }
+.ab-index .tag { grid-column: 2; justify-self: start; margin-top: 6px; }
+
+/* ---------- 04 Book stack (flat, no cover art) ---------- */
+.ab-shelf { display: grid; gap: 6px; margin-top: 20px; max-width: 560px; }
+.ab-shelf li {
+  width: var(--w);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 2px 16px;
+  padding: 10px 16px;
+  border: 1px solid var(--a-line);
+  border-left: 3px solid var(--a-p);
+  background: color-mix(in srgb, var(--a-p) 5%, var(--a-plate));
+  transition: transform 0.25s var(--ease), background-color 0.2s;
+}
+.ab-shelf li:nth-child(even) { margin-left: auto; border-left-width: 1px; border-right: 3px solid var(--a-p); }
+.ab-shelf li:hover { transform: translateX(6px); background-color: color-mix(in srgb, var(--a-p) 10%, var(--a-plate)); }
+.ab-shelf li:nth-child(even):hover { transform: translateX(-6px); }
+.ab-shelf b { font: 500 0.84rem var(--mono); }
+.ab-shelf i { font-style: normal; font-size: 0.74rem; color: var(--a-dim); }
+
+@keyframes rise { from { opacity: 0; transform: translateY(12px); } }
+
+/* ---------- Tablet ---------- */
+@container about (min-width: 560px) {
+  .about { padding: 36px 32px 72px; }
+  .ab-fields { grid-template-columns: repeat(4, 1fr); }
+  .ab-rail { margin: 0 -32px; padding: 10px 32px; }
+  .ab-log li { grid-template-columns: 110px 190px 1fr; }
+  .ab-log i { grid-column: auto; }
+  .ab-index li { grid-template-columns: auto 1fr auto; align-items: start; }
+  .ab-index .tag { grid-column: auto; margin-top: 2px; }
+  /* Interests merge into one bus line, then a stub into the sink */
+  .ab-connect { grid-template-columns: 1fr minmax(180px, 250px); align-items: center; }
+  .ab-lanes { position: relative; padding-right: 36px; }
+  .ab-lanes li { border-left: 0; padding-left: 0; border-bottom: 1px solid var(--a-hair); }
+  .ab-lanes li::before { display: none; }
+  .ab-lanes li::after { content: ""; position: absolute; right: -36px; bottom: -1px; width: 36px; height: 1px; background: var(--a-line); }
+  .ab-lanes::after { content: ""; position: absolute; right: 0; top: 0; bottom: 0; width: 1px; background: var(--a-line); }
+  .ab-sink { position: relative; margin-left: 36px; }
+  .ab-sink::before { content: ""; position: absolute; left: -37px; top: 50%; width: 37px; height: 1px; background: var(--a-p); }
+}
+
+/* ---------- Desktop: cover gets the reticle, rail moves to the left ---------- */
+@container about (min-width: 900px) {
+  .about { padding: 44px 48px 88px; }
+  .ab-head { grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 24px 48px; }
+  .ab-reticle { display: block; }
+  .ab-fields { grid-column: 1 / -1; }
+  .ab-layout { grid-template-columns: 170px minmax(0, 1fr); gap: 48px; margin-top: 32px; }
+  .ab-rail {
+    top: 24px;
+    align-self: start;
+    flex-direction: column;
+    gap: 2px;
+    margin: 0;
+    padding: 0 0 0 16px;
+    overflow: visible;
+    background: none;
+    border: 0;
+    border-left: 1px solid var(--a-line);
+  }
+  .ab-rail a { padding: 8px 10px; border-color: transparent; }
+  .ab-main { padding-top: 0; }
+  .ab-section { scroll-margin-top: 24px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ab-head, .ab-section { animation: none; }
+  .ab-log li, .ab-index li, .ab-index li::before, .ab-shelf li, .ab-rail a { transition: none; }
+  .ab-log li:hover, .ab-index li:hover, .ab-shelf li:hover, .ab-shelf li:nth-child(even):hover { transform: none; padding-left: 0; }
+}

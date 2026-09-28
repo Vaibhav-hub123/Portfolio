@@ -1,11 +1,156 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-<body>
-    dskahklahk
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>About — Vaibhav Agrahari</title>
+    <link rel="stylesheet" href="/TAb_UI/css_for_panels/about.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Orbitron:wght@400..900&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <article class="about">
+      <div class="ab-grid" aria-hidden="true"></div>
+
+      <!-- ============ Header: dossier cover ============ -->
+      <header class="ab-head">
+        <div class="ab-head-copy">
+          <p class="ab-kicker">// Profile dossier</p>
+          <h1 class="ab-title">
+            Learning to build things that <em>respond.</em>
+          </h1>
+          <p class="ab-lede">
+            I'm a student working toward becoming a developer. I like writing
+            code for things people can interact with, and most of what I'm
+            exploring sits where technology and design meet: games, 3D on the
+            web, and the full-stack fundamentals underneath.
+          </p>
+        </div>
+
+        <svg class="ab-reticle" viewBox="0 0 200 200" aria-hidden="true">
+          <circle cx="100" cy="100" r="86" />
+          <circle cx="100" cy="100" r="58" stroke-dasharray="2 6" />
+          <circle cx="100" cy="100" r="30" />
+          <path d="M100 6v34M100 160v34M6 100h34M160 100h34" />
+          <circle class="dot" cx="100" cy="100" r="3" />
+        </svg>
+
+        <dl class="ab-fields">
+          <div><dt>Subject</dt><dd>Vaibhav Agrahari</dd></div>
+          <div><dt>Institution</dt><dd>KIET Group of Institutions</dd></div>
+          <div><dt>Direction</dt><dd>Developer, in progress</dd></div>
+          <!-- PLACEHOLDER: replace with your course / year, or delete this field -->
+          <div><dt>Program</dt><dd class="ab-placeholder">[add course / year]</dd></div>
+        </dl>
+      </header>
+
+      <div class="ab-layout">
+        <nav class="ab-rail" aria-label="About sections">
+          <a href="#ab-connect"><span>01</span>How it connects</a>
+          <a href="#ab-log"><span>02</span>Exploring</a>
+          <a href="#ab-projects"><span>03</span>Projects</a>
+          <a href="#ab-beyond"><span>04</span>Beyond the code</a>
+        </nav>
+
+        <div class="ab-main">
+          <!-- ============ 01 Journey: interests converge ============ -->
+          <section id="ab-connect" class="ab-section" aria-labelledby="h-connect">
+            <h2 id="h-connect" class="ab-h"><span>01</span>How it connects</h2>
+            <p class="ab-note">
+              Not a timeline, just the threads I'm pulling on and where they
+              meet.
+            </p>
+
+            <div class="ab-connect">
+              <ul class="ab-lanes">
+                <li>
+                  <b>Game development</b><span>Godot · Unreal Engine</span>
+                </li>
+                <li><b>Interactive web</b><span>Three.js</span></li>
+                <li><b>Web development</b><span>MERN stack</span></li>
+                <li>
+                  <b>Problem solving</b><span>Data structures &amp; algorithms</span>
+                </li>
+              </ul>
+              <div class="ab-sink">
+                <b>Interactive experiences</b>
+                <span>where technology and design come together</span>
+              </div>
+            </div>
+          </section>
+
+          <!-- ============ 02 Log: learning vs. built ============ -->
+          <section id="ab-log" class="ab-section" aria-labelledby="h-log">
+            <h2 id="h-log" class="ab-h"><span>02</span>What I'm exploring</h2>
+            <p class="ab-note">
+              Status is stated plainly. Nothing here is a claim of expertise.
+            </p>
+            <ul class="ab-log">
+              <li><span class="tag">Explored</span><b>Godot</b><i>Games and prototypes</i></li>
+              <li><span class="tag">Explored</span><b>Unreal Engine</b><i>Games and prototypes</i></li>
+              <li><span class="tag tag--live">Developing</span><b>Three.js</b><i>Aiming for immersive, interactive web experiences</i></li>
+              <li><span class="tag tag--live">Learning</span><b>MERN stack</b><i>By building projects</i></li>
+              <li><span class="tag">Practicing</span><b>DSA</b><i>Working through coding challenges</i></li>
+            </ul>
+          </section>
+
+          <!-- ============ 03 Projects index ============ -->
+          <section id="ab-projects" class="ab-section" aria-labelledby="h-projects">
+            <h2 id="h-projects" class="ab-h"><span>03</span>Selected projects</h2>
+            <!-- PLACEHOLDER: add real links (e.g. GitHub / live demo) by turning each <h3> into an <a> -->
+            <ol class="ab-index">
+              <li>
+                <span class="n">01</span>
+                <div>
+                  <h3>DevFlow</h3>
+                  <p>A MERN portfolio project focused on helping teams organize projects, tasks, and collaboration.</p>
+                </div>
+                <span class="tag tag--live">In progress</span>
+              </li>
+              <li>
+                <span class="n">02</span>
+                <div>
+                  <h3>CampusGuessr</h3>
+                  <p>A campus exploration and guessing game prototype made with Godot.</p>
+                </div>
+                <span class="tag">Prototype</span>
+              </li>
+              <li>
+                <span class="n">03</span>
+                <div>
+                  <h3>GeoNerds</h3>
+                  <p>A geography-based project built around an interactive world map.</p>
+                </div>
+                <span class="tag">Project</span>
+              </li>
+              <li>
+                <span class="n">04</span>
+                <div>
+                  <h3>FareSight</h3>
+                  <p>An airfare analytics dashboard project.</p>
+                </div>
+                <span class="tag">Project</span>
+              </li>
+            </ol>
+          </section>
+
+          <!-- ============ 04 Beyond the code ============ -->
+          <section id="ab-beyond" class="ab-section" aria-labelledby="h-beyond">
+            <h2 id="h-beyond" class="ab-h"><span>04</span>Beyond the code</h2>
+            <p class="ab-note">I read too. A few titles from the shelf:</p>
+            <ul class="ab-shelf">
+              <li style="--w: 100%"><b>I Have No Mouth, and I Must Scream</b><i>Harlan Ellison</i></li>
+              <li style="--w: 82%"><b>The Metamorphosis</b><i>Franz Kafka</i></li>
+              <li style="--w: 68%"><b>White Nights</b><i>Fyodor Dostoevsky</i></li>
+              <li style="--w: 90%"><b>A Little Life</b><i>Hanya Yanagihara</i></li>
+            </ul>
+          </section>
+        </div>
+      </div>
+    </article>
+  </body>
 </html>
