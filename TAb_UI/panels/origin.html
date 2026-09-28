@@ -8,192 +8,90 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&display=swap"
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Orbitron:wght@400..900&display=swap"
       rel="stylesheet"
     />
   </head>
   <body>
     <div class="origin-panel">
+      <!-- Atmosphere: texture, fine grid, vignette, one slow sweep -->
       <div class="noise"></div>
-      <div class="noise2"></div>
       <div class="full-grid"></div>
       <div class="vignette"></div>
-
-      <!-- Slow, low-opacity sweep across the whole panel -->
       <div class="scan-sweep"></div>
 
-      <!-- infoPanel.js toggles `.is-active` here for a brief flicker
-           when panel content finishes loading -->
+      <!-- infoPanel.js toggles `.is-active` for a brief flicker when the panel loads -->
       <div class="origin-distortion"></div>
 
-      <!-- Status readout: reads from the active theme, so it stays in
-           sync with blue/green/red switching automatically -->
-      <div class="status-cluster" aria-label="Availability status">
+      <!-- Frame: corner brackets, hairline border, left ruler, one micro-label -->
+      <div class="hud" aria-hidden="true">
+        <span class="hud-corner tl"></span>
+        <span class="hud-corner tr"></span>
+        <span class="hud-corner bl"></span>
+        <span class="hud-corner br"></span>
+        <span class="hud-ruler"></span>
+        <span class="hud-label">Crafting interactive experiences</span>
+      </div>
+
+      <div class="status-cluster reveal-late" style="--i: 0">
         <span class="status-dot" aria-hidden="true"></span>
         <span class="status-text">AVAILABLE FOR WORK</span>
       </div>
-
-      <svg class="hud" viewBox="0 0 1000 600" preserveAspectRatio="none">
-        <!-- corner brackets -->
-        <path d="M10 80 L10 10 L120 10" />
-        <path d="M990 520 L990 590 L880 590" />
-
-        <!-- Vertical tick ruler (left) -->
-        <g class="screen-decor" transform="translate(10,200)">
-          <line x1="0" y1="0" x2="0" y2="200" />
-          <line x1="0" y1="0" x2="14" y2="0" />
-          <line x1="0" y1="40" x2="8" y2="40" />
-          <line x1="0" y1="80" x2="10" y2="80" />
-          <line x1="0" y1="120" x2="8" y2="120" />
-          <line x1="0" y1="160" x2="10" y2="160" />
-          <line x1="0" y1="200" x2="14" y2="200" />
-        </g>
-
-        <g class="screen-decor" transform="translate(10, 500)">
-          <path d="M0 0 L100 0 L150 -50 L 300 -50" />
-        </g>
-        <g class="screen-decor">
-          <path d="M120 100 L260 100 L330 170" />
-          <path d="M880 450 L740 450 L670 380" />
-        </g>
-
-        <!-- small corner ticks (horizontal/vertical only) balancing the two removed brackets -->
-        <g class="tick-decor">
-          <line x1="920" y1="15" x2="960" y2="15" />
-          <line x1="960" y1="15" x2="960" y2="45" />
-          <line x1="40" y1="585" x2="80" y2="585" />
-          <line x1="40" y1="555" x2="40" y2="585" />
-        </g>
-
-        <!-- Scattered micro-decor: squares, dots, and small horizontal lines only -->
-        <g class="micro-decor">
-          <!-- top-left quadrant -->
-          <rect x="95" y="150" width="8" height="8" />
-          <rect x="170" y="140" width="6" height="6" />
-          <rect x="45" y="230" width="5" height="5" />
-          <rect x="205" y="70" width="6" height="6" />
-          <line x1="30" y1="120" x2="60" y2="120" />
-          <line x1="130" y1="105" x2="150" y2="105" />
-          <line x1="200" y1="235" x2="225" y2="235" />
-          <line x1="60" y1="270" x2="85" y2="270" />
-          <circle cx="60" cy="60" r="2" fill="var(--primary)" />
-          <circle cx="120" cy="285" r="2" fill="var(--primary)" />
-          <circle cx="180" cy="200" r="2" fill="var(--primary)" />
-
-          <!-- top-right quadrant -->
-          <rect x="850" y="185" width="10" height="10" />
-          <rect x="920" y="130" width="8" height="8" />
-          <rect x="960" y="240" width="5" height="5" />
-          <rect x="790" y="90" width="6" height="6" />
-          <line x1="900" y1="90" x2="940" y2="90" />
-          <line x1="870" y1="255" x2="895" y2="255" />
-          <line x1="935" y1="210" x2="955" y2="210" />
-          <line x1="800" y1="150" x2="825" y2="150" />
-          <circle cx="880" cy="245" r="2" fill="var(--primary)" />
-          <circle cx="960" cy="80" r="2" fill="var(--primary)" />
-          <circle cx="820" cy="200" r="2" fill="var(--primary)" />
-
-          <!-- bottom-left quadrant -->
-          <rect x="60" y="380" width="6" height="6" />
-          <rect x="140" y="430" width="8" height="8" />
-          <rect x="30" y="470" width="5" height="5" />
-          <rect x="190" y="400" width="6" height="6" />
-          <line x1="60" y1="485" x2="80" y2="485" />
-          <line x1="180" y1="505" x2="205" y2="505" />
-          <line x1="25" y1="350" x2="50" y2="350" />
-          <line x1="110" y1="365" x2="135" y2="365" />
-          <circle cx="55" cy="530" r="2" fill="var(--primary)" />
-          <circle cx="160" cy="460" r="2" fill="var(--primary)" />
-
-          <!-- bottom-right quadrant -->
-          <rect x="900" y="400" width="6" height="6" />
-          <rect x="850" y="500" width="8" height="8" />
-          <rect x="955" y="450" width="5" height="5" />
-          <rect x="790" y="420" width="6" height="6" />
-          <line x1="920" y1="485" x2="940" y2="485" />
-          <line x1="800" y1="525" x2="825" y2="525" />
-          <line x1="960" y1="380" x2="985" y2="380" />
-          <line x1="855" y1="365" x2="880" y2="365" />
-          <circle cx="940" cy="560" r="2" fill="var(--primary)" />
-          <circle cx="800" cy="470" r="2" fill="var(--primary)" />
-          <circle cx="895" cy="530" r="2" fill="var(--primary)" />
-
-          <!-- scattered near mid-edges (avoid center content zone ~x250-750,y150-500) -->
-          <line x1="10" y1="300" x2="30" y2="300" />
-          <line x1="970" y1="300" x2="990" y2="300" />
-          <rect x="15" y="330" width="4" height="4" />
-          <rect x="978" y="330" width="4" height="4" />
-          <line x1="10" y1="130" x2="30" y2="130" />
-          <line x1="970" y1="470" x2="990" y2="470" />
-        </g>
-      </svg>
-
-      <svg
-        class="hud-overlay"
-        viewBox="0 0 1000 600"
-        preserveAspectRatio="xMidYMid meet"
-      >
-        <g>
-          <circle class="circle_line1" cx="256" cy="450" r="6" />
-          <circle class="circle_line2" cx="256" cy="450" r="2" />
-          <circle class="circle_line1" cx="281" cy="176" r="6" />
-          <circle class="circle_line2" cx="281" cy="176" r="2" />
-          <circle class="circle_line1" cx="719" cy="374" r="6" />
-          <circle class="circle_line2" cx="719" cy="374" r="2" />
-        </g>
-      </svg>
 
       <div class="content">
         <div class="profile">
           <div class="intro">
             <div class="intro-container">
               <div class="text1">Hello</div>
-              <div class="text2">
-                <span class="white"> I'm</span> Vaibhav Agrahari
-              </div>
+              <h1 class="text2">
+                <span class="white">I'm</span>
+                <span class="name">Vaibhav Agrahari</span>
+              </h1>
 
               <p class="text3">
                 <span>I'm a developer who enjoys building </span>
-                <span>interactive experiences at the </span>
-                <span>intersection of design and technology. I </span>
-                <span>work with modern web technologies,</span>
-                <span> animation, and real-time 3D to create </span>
-                <span>interfaces that are both visually engaging</span>
-                <span>and technically driven.</span>
+                <span>interactive experiences at the intersection </span>
+                <span>of design and technology. I work with modern </span>
+                <span>web technologies, animation, and real-time 3D </span>
+                <span>to create interfaces that are both visually </span>
+                <span>engaging and technically driven.</span>
               </p>
-              <span class="system-cursor">▌</span>
 
-              <!-- Small technical/metadata readout, phrased from the
-                   intro copy above rather than invented skill names —
-                   edit the labels to match your actual focus areas -->
-              <div class="focus-tags" role="list" aria-label="Areas of focus">
-                <span class="focus-tag" role="listitem">Interactive Web</span>
-                <span class="focus-tag" role="listitem">Real-Time 3D</span>
-                <span class="focus-tag" role="listitem">Design-Driven Dev</span>
-              </div>
+              <ul class="focus-tags" aria-label="Areas of focus">
+                <li class="focus-tag reveal-late" style="--i: 1">Interactive Web</li>
+                <li class="focus-tag reveal-late" style="--i: 2">Real-Time 3D</li>
+                <li class="focus-tag reveal-late" style="--i: 3">Design-Driven Dev</li>
+              </ul>
 
-              <!-- Placeholder destinations — point these at your actual
-                   work/contact sections or routes -->
+              <!-- Placeholder destinations — point these at your actual work/contact sections -->
               <div class="intro-actions">
-                <a class="hud-btn hud-btn--primary" href="#work">View Work</a>
-                <a class="hud-btn hud-btn--ghost" href="#contact">Get In Touch</a>
+                <a class="hud-btn hud-btn--primary reveal-late" style="--i: 4" href="#work">
+                  View Work
+                  <svg class="chev" viewBox="0 0 14 12" width="14" height="12" aria-hidden="true"><path d="M1 1l5 5-5 5M8 1l5 5-5 5" fill="none" stroke="currentColor" stroke-width="1.6" /></svg>
+                </a>
+                <a class="hud-btn hud-btn--ghost reveal-late" style="--i: 5" href="#contact">
+                  Get In Touch
+                  <svg class="chev" viewBox="0 0 14 12" width="14" height="12" aria-hidden="true"><path d="M1 1l5 5-5 5M8 1l5 5-5 5" fill="none" stroke="currentColor" stroke-width="1.6" /></svg>
+                </a>
               </div>
             </div>
           </div>
+
           <div class="photo-container">
-            <div class="photo-box">
-              <div class="grid"></div>
-              <img
-                class="photo"
-                src="assets/MyPhoto/blue.png"
-                alt="Portrait of Vaibhav Agrahari"
-              />
-              <img class="photo1" src="assets/MyPhoto/blue.png" alt="" aria-hidden="true" />
+            <div class="photo-frame">
+              <div class="photo-box">
+                <div class="grid"></div>
+                <img
+                  class="photo"
+                  src="assets/MyPhoto/blue.png"
+                  alt="Portrait of Vaibhav Agrahari"
+                />
+                <img class="photo1" src="assets/MyPhoto/blue.png" alt="" aria-hidden="true" />
+                <div class="scan-line"></div>
+                <span class="photo-meta" aria-hidden="true">Developer</span>
+                <span class="photo-name" aria-hidden="true">Vaibhav Agrahari</span>
+              </div>
             </div>
-            <div class="scan-line"></div>
-          </div>
-          <div class="intro2">
-            <p></p>
           </div>
         </div>
       </div>

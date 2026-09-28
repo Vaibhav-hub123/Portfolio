@@ -107,8 +107,9 @@ async function loadPanel(name) {
   const html = await fetch(`/TAb_UI/panels/${name}.html`).then((r) => r.text());
 
   bodyEl.innerHTML = html;
+  bodyEl.querySelector(".origin-panel")?.classList.add("is-booting");
   initOriginPanel();
-   syncPhotoTheme();
+  syncPhotoTheme();
   const text1 = bodyEl.querySelector(".text1");
   const text2 = bodyEl.querySelector(".text2");
   const text3 = bodyEl.querySelector(".text3");
@@ -226,7 +227,13 @@ function initOriginTyping() {
   const text2 = bodyEl.querySelector(".text2");
   const text3 = bodyEl.querySelector(".text3");
 
-  if (!text1 || !text2 || !text3) return;
+  const panelRoot = bodyEl.querySelector(".origin-panel");
+  const finishBoot = () => panelRoot?.classList.remove("is-booting");
+
+  if (!text1 || !text2 || !text3) {
+    finishBoot();
+    return;
+  }
 
   const typingSpeed = 20;
   const markerTime = 30;
@@ -260,8 +267,9 @@ function initOriginTyping() {
     const normalText = " Vaibhav Agrahari";
     text2.innerHTML = "";
     const whiteSpan = document.createElement("span");
-    whiteSpan.style.color = "white";
+    whiteSpan.className = "white";
     const normalSpan = document.createElement("span");
+    normalSpan.className = "name";
     const cursor = createCursor();
     text2.appendChild(whiteSpan);
     text2.appendChild(normalSpan);
@@ -307,6 +315,7 @@ function initOriginTyping() {
         line.classList.remove("line-reveal");
         line.classList.add("is-visible");
       });
+      finishBoot();
       return;
     }
 
@@ -322,6 +331,7 @@ function initOriginTyping() {
 
     text3.style.visibility = "visible";
     await revealText3Lines();
+    finishBoot();
   }
 
   startTyping();

@@ -3,9 +3,13 @@
 
   left: 10%;
   top: 150px;
-  width: 65vw;
-  height: 58vh;
-  max-width: 900px;
+  /* Wider, and the height now follows the content (capped to the viewport)
+     so a hero that fits never shows a scrollbar. */
+  width: min(92vw, 1080px);
+  height: auto;
+  max-height: calc(100vh - 174px);
+  display: flex;
+  flex-direction: column;
 
   opacity: 0;
   visibility: hidden;
@@ -41,6 +45,7 @@
 }
 
 .info-panel-header {
+  flex: 0 0 52px;
   height: 52px;
 
   display: flex;
@@ -81,7 +86,8 @@
 .info-panel-body {
   box-sizing: border-box;
 
-  height: calc(100% - 52px);
+  flex: 1 1 auto;
+  min-height: 0;
 
   overflow-y: auto;
 
@@ -91,6 +97,14 @@
   color: rgba(230, 245, 255, 0.85);
   line-height: 1.8;
   background: rgba(0, 10, 20, 0.55);
+
+  /* Only appears as a fallback on very short screens */
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+/* The hero draws its own frame edge-to-edge, so drop the body padding for it */
+.info-panel-body:has(.origin-panel) {
+  padding: 0;
 }
 .info-panel-close {
   width: 34px;
