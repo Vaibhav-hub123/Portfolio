@@ -13,7 +13,7 @@
   position: relative;
   container: about / inline-size;
   overflow-x: clip; /* clip, not hidden: keeps the sticky rail working */
-  padding: 28px 20px 56px;
+  padding: 28px 20px 56px 20px;
   color: var(--a-ink);
   font: 400 0.9rem/1.7 var(--mono);
   background:
