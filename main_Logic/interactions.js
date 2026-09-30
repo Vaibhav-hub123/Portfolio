@@ -154,7 +154,10 @@ export function goToPlanet(camera, name) {
 
 // makes the camera rotate back to as it was in during the navigator rotation 
 export function lookAtOrigin(camera) {
-  if (flightState !== STATE.IDLE) return;// dont do anything if already travelling 
+  if (flightState !== STATE.IDLE) {
+    returnToOrigin(camera);
+    return;
+  }// dont do anything if already travelling 
   navLookTarget = ORIGIN_QUATERNION.clone();  // clone because origin_quaternion is like a pointer so if we jsut write equal to it will just make them both point at the same thing 
   navLooking = true;
 }

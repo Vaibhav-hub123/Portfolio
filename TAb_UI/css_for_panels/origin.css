@@ -1,5 +1,5 @@
 /* Legacy page-level rule kept as-is so the host page is unaffected. */
-body {
+/* body {
   margin: 0;
   background: #02040c;
   display: flex;
@@ -7,7 +7,7 @@ body {
   align-items: center;
   min-height: 100vh;
   font-family: "Orbitron", sans-serif;
-}
+} */
 
 /* Theme variables — themeManager can still override --primary/--secondary etc.
    Everything below derives from them, so blue/green/red keep working. */
@@ -82,10 +82,10 @@ body {
   height: 22%;
   background: linear-gradient(to bottom, transparent, color-mix(in srgb, var(--primary) 6%, transparent) 50%, transparent);
   transform: translateY(-100%);
-  animation: sweep 10s linear infinite;
+  animation: originScanSweep 10s linear infinite;
   will-change: transform;
 }
-@keyframes sweep {
+@keyframes originScanSweep  {
   to { transform: translateY(500%); }
 }
 
@@ -163,9 +163,9 @@ body {
   border-radius: 50%;
   background: var(--primary);
   box-shadow: 0 0 8px var(--primary);
-  animation: pulse 2.6s ease-in-out infinite;
+  animation: OriginPulse 2.6s ease-in-out infinite;
 }
-@keyframes pulse {
+@keyframes OriginPulse {
   50% { opacity: 0.4; transform: scale(0.75); }
 }
 
