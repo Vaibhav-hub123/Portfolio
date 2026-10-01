@@ -108,21 +108,13 @@
 }
 .info-panel-close {
   width: 34px;
-
   height: 34px;
-
   border: none;
-
   border-radius: 50%;
-
   background: transparent;
-
   color: var(--primary);
-
   cursor: pointer;
-
   font-size: 22px;
-
   transition: background 0.2s, transform 0.2s;
 }
 

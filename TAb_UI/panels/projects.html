@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/TAb_UI/css_for_panels/projects.css">
+    <title>Document</title>
+</head>
+<body>
+   <!--
+  PROJECTS PANEL FRAGMENT: no <html>/<head>/<body>. Injected into .info-panel-body.
+  Stylesheet: /TAb_UI/css_for_panels/project.css (link it once in the main page <head>).
+
+  EDIT GUIDE
+  - Add a module: copy one <article class="pj-card">, set data-cat (web game systems experiments),
+    and give it a data-n. To place it on the scope, add a <g class="pj-node"> with the same data-n
+    and data-cat, and (for hover linking) one more selector in the "scope link" rule in project.css.
+  - Links: replace href="#" (marked data-placeholder).
+  - Filtering is CSS-only (radios + :has). Scripts inside injected HTML don't run, so none are used.
+  - The empty .origin-distortion div is picked up by your existing initOriginDistortion().
+-->
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Orbitron:wght@400..900&display=swap" rel="stylesheet" />
+
+<section class="projects-panel" aria-label="Project registry">
+  <input class="pj-radio" type="radio" name="pj-filter" id="pj-all" checked>
+  <input class="pj-radio" type="radio" name="pj-filter" id="pj-web">
+  <input class="pj-radio" type="radio" name="pj-filter" id="pj-game">
+  <input class="pj-radio" type="radio" name="pj-filter" id="pj-systems">
+  <input class="pj-radio" type="radio" name="pj-filter" id="pj-experiments">
+
+  <!-- Atmosphere (same layers as the Origin hero) -->
+  <div class="pj-noise"></div>
+  <div class="pj-grid-bg"></div>
+  <div class="pj-vignette"></div>
+  <div class="pj-sweep-h"></div>
+  <div class="origin-distortion" aria-hidden="true"></div>
+
+  <div class="pj-hud" aria-hidden="true">
+    <span class="pj-corner tl"></span><span class="pj-corner tr"></span>
+    <span class="pj-corner bl"></span><span class="pj-corner br"></span>
+  </div>
+
+  <div class="pj-status pj-rise" style="--i:0">
+    <span class="pj-status-dot" aria-hidden="true"></span>
+    <span>REGISTRY ONLINE</span>
+  </div>
+
+  <div class="pj-content">
+
+    <!-- HERO: intro left, orbital scope right -->
+    <div class="pj-hero">
+      <div class="pj-intro">
+        <div class="pj-hello">Projects</div>
+        <h1 class="pj-title">
+          <span class="pj-lead">Mission</span>
+          <span class="pj-grad">Registry</span>
+        </h1>
+        <p class="pj-lede">
+          Selected experiments and systems, filed as missions.
+          Point at a module below and its position lights up on the scope.
+        </p>
+
+        <div class="pj-tags" role="group" aria-label="Project categories">
+          <label class="pj-tag pj-rise" style="--i:1" for="pj-all">All</label>
+          <label class="pj-tag pj-rise" style="--i:2" for="pj-web">Web</label>
+          <label class="pj-tag pj-rise" style="--i:3" for="pj-game">Game dev</label>
+          <label class="pj-tag pj-rise" style="--i:4" for="pj-systems">Systems</label>
+          <label class="pj-tag pj-rise" style="--i:5" for="pj-experiments">Experiments</label>
+        </div>
+      </div>
+
+      <!-- UNIQUE ELEMENT: orbital scope. Featured project is the core; the rest orbit it. -->
+      <div class="pj-scope-wrap pj-rise" style="--i:2">
+        <div class="pj-scope-frame">
+          <div class="pj-scope">
+            <div class="pj-scope-grid"></div>
+            <div class="pj-radar" aria-hidden="true"></div>
+            <svg viewBox="0 0 320 320" role="img" aria-label="Orbital map of projects: FareSight at the core, DevFlow, CampusGuessr, GeoNerds and Space Portfolio in orbit">
+              <circle class="pj-tick" cx="160" cy="160" r="156"/>
+              <circle class="pj-ring" cx="160" cy="160" r="148"/>
+              <circle class="pj-ring" cx="160" cy="160" r="118"/>
+              <circle class="pj-ring" cx="160" cy="160" r="84"/>
+              <circle class="pj-ring" cx="160" cy="160" r="44"/>
+              <path class="pj-axis" d="M160 8V312M8 160H312"/>
+
+              <g class="pj-node pj-node--core" data-n="faresight" transform="translate(160 160)">
+                <circle class="pj-halo" r="20"/>
+                <circle class="pj-pt" r="6"/>
+                <text x="0" y="38" text-anchor="middle">FareSight</text>
+              </g>
+              <g class="pj-node" data-n="devflow" data-cat="web" transform="translate(224.3 106)">
+                <circle class="pj-halo" r="10"/><circle class="pj-pt" r="3.5"/>
+                <text x="13" y="3.5">DevFlow</text>
+              </g>
+              <g class="pj-node" data-n="campusguessr" data-cat="game" transform="translate(266.9 209.9)">
+                <circle class="pj-halo" r="10"/><circle class="pj-pt" r="3.5"/>
+                <text x="-13" y="20" text-anchor="end">CampusGuessr</text>
+              </g>
+              <g class="pj-node" data-n="geonerds" data-cat="game" transform="translate(49.1 200.4)">
+                <circle class="pj-halo" r="10"/><circle class="pj-pt" r="3.5"/>
+                <text x="13" y="3.5">GeoNerds</text>
+              </g>
+              <g class="pj-node" data-n="portfolio" data-cat="web experiments" transform="translate(97.5 25.9)">
+                <circle class="pj-halo" r="10"/><circle class="pj-pt" r="3.5"/>
+                <text x="13" y="3.5">Space Portfolio</text>
+              </g>
+            </svg>
+            <span class="pj-scope-meta" aria-hidden="true">Orbital map</span>
+            <span class="pj-scope-name" aria-hidden="true">Sector dev</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FEATURED: active mission -->
+    <article class="pj-featured pj-rise" style="--i:6" data-n="faresight">
+      <div class="pj-feat-top">
+        <span class="pj-flag"><i class="pj-dot"></i>Active mission</span>
+        <span class="pj-id">node P-01</span>
+      </div>
+      <h2 class="pj-feat-name">FareSight</h2>
+      <p class="pj-feat-kind">Airfare analytics and price index</p>
+      <p class="pj-desc">
+        A dashboard that pulls airfare data from external APIs, processes it,
+        and shows how prices move so routes can be compared at a glance.
+      </p>
+      <dl class="pj-meta">
+        <div><dt>Status</dt><dd class="pj-on">Active</dd></div>
+        <div><dt>Category</dt><dd>Data system</dd></div>
+        <div><dt>Stack</dt><dd>React · Vite · Express · APIs</dd></div>
+      </dl>
+      <div class="pj-actions">
+        <a class="pj-btn pj-btn--primary" href="#" data-placeholder>
+          Access project
+          <svg class="chev" viewBox="0 0 14 12" width="14" height="12" aria-hidden="true"><path d="M1 1l5 5-5 5M8 1l5 5-5 5" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>
+        </a>
+        <a class="pj-btn pj-btn--ghost" href="#" data-placeholder>Source</a>
+      </div>
+    </article>
+
+    <!-- MODULES -->
+    <div class="pj-modules">
+
+      <article class="pj-card pj-rise" style="--i:7" data-n="devflow" data-cat="web">
+        <header class="pj-card-top">
+          <span class="pj-id">project // 02</span>
+          <span class="pj-state"><i class="pj-dot"></i>In progress</span>
+        </header>
+        <h3 class="pj-name">DevFlow</h3>
+        <p class="pj-desc">Collaboration system that helps teams organize projects, tasks, and communication in one place.</p>
+        <dl class="pj-mini">
+          <div><dt>Type</dt><dd>Web app</dd></div>
+          <div><dt>Stack</dt><dd>MongoDB · Express · React · Node.js</dd></div>
+        </dl>
+        <footer class="pj-card-foot">
+          <a class="pj-link" href="#" data-placeholder>Source</a>
+          <a class="pj-open" href="#" data-placeholder>Open project
+            <svg class="chev" viewBox="0 0 14 12" width="14" height="12" aria-hidden="true"><path d="M1 1l5 5-5 5M8 1l5 5-5 5" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>
+          </a>
+        </footer>
+      </article>
+
+      <article class="pj-card pj-rise" style="--i:8" data-n="campusguessr" data-cat="game">
+        <header class="pj-card-top">
+          <span class="pj-id">project // 03</span>
+          <span class="pj-state"><i class="pj-dot"></i>Prototype</span>
+        </header>
+        <h3 class="pj-name">CampusGuessr</h3>
+        <p class="pj-desc">A GeoGuessr-inspired exploration game built around campus imagery.</p>
+        <dl class="pj-mini">
+          <div><dt>Type</dt><dd>Game / geolocation</dd></div>
+          <div><dt>Stack</dt><dd>Godot · GDScript · Supabase</dd></div>
+        </dl>
+        <footer class="pj-card-foot">
+          <a class="pj-link" href="#" data-placeholder>Source</a>
+          <a class="pj-open" href="#" data-placeholder>Open project
+            <svg class="chev" viewBox="0 0 14 12" width="14" height="12" aria-hidden="true"><path d="M1 1l5 5-5 5M8 1l5 5-5 5" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>
+          </a>
+        </footer>
+      </article>
+
+      <article class="pj-card pj-rise" style="--i:9" data-n="geonerds" data-cat="game">
+        <header class="pj-card-top">
+          <span class="pj-id">project // 04</span>
+          <span class="pj-state"><i class="pj-dot"></i>Online</span>
+        </header>
+        <h3 class="pj-name">GeoNerds</h3>
+        <p class="pj-desc">An interactive world-map project for exploring geography through play.</p>
+        <dl class="pj-mini">
+          <div><dt>Type</dt><dd>Game / interactive map</dd></div>
+          <div><dt>Stack</dt><dd>Godot · GDScript</dd></div>
+        </dl>
+        <footer class="pj-card-foot">
+          <a class="pj-link" href="#" data-placeholder>Source</a>
+          <a class="pj-open" href="#" data-placeholder>Open project
+            <svg class="chev" viewBox="0 0 14 12" width="14" height="12" aria-hidden="true"><path d="M1 1l5 5-5 5M8 1l5 5-5 5" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>
+          </a>
+        </footer>
+      </article>
+
+      <article class="pj-card pj-rise" style="--i:10" data-n="portfolio" data-cat="web experiments">
+        <header class="pj-card-top">
+          <span class="pj-id">project // 05</span>
+          <span class="pj-state"><i class="pj-dot"></i>You are here</span>
+        </header>
+        <h3 class="pj-name">Space Portfolio</h3>
+        <p class="pj-desc">This portfolio: a real-time 3D spaceship interface with a HUD-style information panel.</p>
+        <dl class="pj-mini">
+          <div><dt>Type</dt><dd>Interactive 3D site</dd></div>
+          <div><dt>Stack</dt><dd>Three.js · WebGL · JavaScript · HTML · CSS</dd></div>
+        </dl>
+        <footer class="pj-card-foot">
+          <a class="pj-link" href="#" data-placeholder>Source</a>
+          <a class="pj-open" href="#" data-placeholder>Open project
+            <svg class="chev" viewBox="0 0 14 12" width="14" height="12" aria-hidden="true"><path d="M1 1l5 5-5 5M8 1l5 5-5 5" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>
+          </a>
+        </footer>
+      </article>
+
+    </div>
+
+    <footer class="pj-count"><span>Projects online</span></footer>
+  </div>
+</section>
+</body>
+</html>

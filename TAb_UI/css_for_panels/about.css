@@ -305,3 +305,5 @@
   .ab-log li, .ab-index li, .ab-index li::before, .ab-shelf li, .ab-rail a { transition: none; }
   .ab-log li:hover, .ab-index li:hover, .ab-shelf li:hover, .ab-shelf li:nth-child(even):hover { transform: none; padding-left: 0; }
 }
+
+
