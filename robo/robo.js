@@ -18,7 +18,7 @@ async function blink() {
   blinking = true;
   const previous = currentExpression; // which expression will the blinking work with like there can be happy blink sad blick etc
   await setExpression(previous + "Blink");//just naming convention 
-  await new Promise((resolve) => setTimeout(resolve, 100));//wait 100ms
+  await new Promise((resolve) => setTimeout(resolve, 1000));//wait 100ms
   await setExpression(previous);// go back to expression without blinking 
   blinking = false;
 }
