@@ -276,6 +276,7 @@ let flowPauseTimeout = null;
 function startFlow() {
   cancelAnimationFrame(flowAnimationId);// if any animation is already their cancel it (security check)
   clearTimeout(flowPauseTimeout);//
+  flowPulse.style.opacity = "";// clear opacity left over from retracting the beam
   flowPulse.classList.remove("flow-hidden");//make the flow visible 
 
   let progress = 0;//so that it always return to the beginning

@@ -1,6 +1,8 @@
 import * as THREE from "three"; // importing three js
 import { createStars } from "../world/stars.js";
+import { createAmbientDetails, updateAmbientDetails } from "../world/ambient.js";
 import { createPlanet } from "../world/planets.js";
+import { createSkillsPlanet } from "../world/skillsPlanet.js";
 import {
   setupInteractions,
   registerPlanet,
@@ -29,6 +31,7 @@ const mediumStars = createStars(scene, 1000, 2, 3, 0xddeeff);
 const bright1 = createStars(scene, 50, 6, 8, 0xffffff);
 const bright2 = createStars(scene, 50, 6, 8, 0xddeeff);
 const bright3 = createStars(scene, 50, 6, 8, 0xbbddff);
+createAmbientDetails(scene);
 
 const ambient = new THREE.AmbientLight(0xffffff, 0.5); // creating ambience in the scene (incorporated in three js )(ambient light lights everything equally )
 scene.add(ambient); // adding the abience into the scene
@@ -46,6 +49,14 @@ const camera = new THREE.PerspectiveCamera(
   100000,
 ); // creating the camera for our scene the parameters are as follows FOV ,aspect ratio, near plane , far plane
 camera.position.set(0, 0, 0); // setting the position of the camera
+scene.add(camera);
+
+// Soft frontal fill follows the viewer and lights scene objects from the camera direction.
+const cameraFillLight = new THREE.DirectionalLight(0xc4e5ff, 1.4);
+camera.add(cameraFillLight);
+camera.add(cameraFillLight.target);
+cameraFillLight.position.set(0, 0, 0);
+cameraFillLight.target.position.set(0, 0, -1);
 
 const renderer = new THREE.WebGLRenderer({ antialias: true }); // renderer converts the scene into pixels kindof so that the browser can display them without antialias the edges looks jagged lol dont know what that means
 renderer.setPixelRatio(1); // forcing to render at normal resolution for better performance
@@ -68,6 +79,7 @@ const planetData = [
     about: "Who Am I?",
     model: "./assets/3dPlanets/planet1.glb",
     size: 6,
+    rotationSpeed: 0.00072,
     position: [-18, 5, -45],
   },
   {
@@ -76,6 +88,7 @@ const planetData = [
     about: "",
     model: "./assets/3dPlanets/planet2.glb",
     size: 6,
+    rotationSpeed: -0.00048,
     position: [40, 40, -100],
   },
   {
@@ -84,14 +97,20 @@ const planetData = [
     about: "",
     model: "./assets/3dPlanets/planet3.glb",
     size: 10,
+    rotationSpeed: 0.00034,
+    approachDistance: 15.5,
     position: [100, -20, 80],
   },
-  // {
-  //   name: "skills",
-  //   model: "./assets/3dPlanets/planet4.glb",
-  //   size: 5.5,
-  //   position: [18, -15, -60],
-  // },
+  {
+    name: "skills",
+    title: "SKILLS",
+    about: "Current toolkit",
+    procedural: true,
+    size: 4.5,
+    rotationSpeed: 0.00135,
+    approachDistance: 10,
+    position: [-100, -5, 107],
+  },
   // {
   //   name: "contact",
   //   model: "./assets/3dPlanets/planet5.glb",
@@ -106,6 +125,13 @@ const planets = []; //an array to store all the planets
 
 // adding the planets in the scene
 planetData.forEach((data) => {
+  if (data.procedural) {
+    const planet = createSkillsPlanet(scene, data);
+    planets.push(planet);
+    registerPlanet(planet);
+    return;
+  }
+
   createPlanet(scene, data.model, data.size, ...data.position, (planet) => {
     Object.assign(planet.userData, data);
     planets.push(planet); // adding the plaents in the array
@@ -205,6 +231,7 @@ function animate() {
   updateInteractions(camera); // calling the update interations main thing for the all travel and stuff in interactions.js
   const t2 = performance.now(); // calculating after updateinteractions then we do the math if it takes time then this is causing problem
   updateNebulas(time, camera); // help in loading and stuff of the nebulas in nebula.js
+  updateAmbientDetails(time);
   const t3 = performance.now(); // calculating time after adding the nebulas if this takes time this is the culprit
   renderer.render(scene, camera); // rendering the whole scene with everything in it
   const t4 = performance.now(); //after the final render is this causing problems :<>
@@ -255,7 +282,13 @@ function animate() {
 
   // adds a little rotation to all the planets next step -> make it so that different planets rotate with different speeds
   planets.forEach((planet) => {
-    planet.rotation.y += 0.001;
+    const speed = planet.userData.rotationSpeed ?? 0.001;
+    if (planet.userData.spinGroup) {
+      planet.userData.spinGroup.rotation.y += speed;
+      planet.userData.ringGroup.rotation.y += speed * 0.12;
+    } else {
+      planet.rotation.y += speed;
+    }
   });
 }
 

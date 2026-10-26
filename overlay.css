@@ -289,7 +289,7 @@
   /* left: 300px;
   bottom: 80px; */
   width: 200px;
-  aspect-ratio: 215 / 205;
+  aspect-ratio: 215 / 221;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -300,6 +300,7 @@
   filter: drop-shadow(0 0 8px var(--glow-medium))
     drop-shadow(0 0 18px var(--glow-strong));
   animation: robotFloat 3s ease-in-out infinite;
+  transition: opacity 140ms ease;
   /* outline: 2px solid red; */
   /* background: rgba(255, 0, 0, 0.1); */
 }
@@ -310,16 +311,22 @@
   /* outline: 2px solid lime; */
 }
 
+@media (prefers-reduced-motion: reduce) {
+  #robotAssistant {
+    transition: none;
+  }
+}
+
 /* Floating Animation */
 @keyframes robotFloat {
   0% {
-    transform: translateY(0px);
-  }
-  50% {
     transform: translateY(-12px);
   }
+  50% {
+    transform: translateY(-24px);
+  }
   100% {
-    transform: translateY(0px);
+    transform: translateY(-12px);
   }
 }
 
@@ -344,6 +351,14 @@
 .sweep {
   position: absolute;
 }
+.radar .scannerDots {
+  fill: var(--primary);
+  stroke: #c9f7ff;
+  stroke-width: 1.5px;
+  filter: drop-shadow(0 0 4px var(--primary))
+    drop-shadow(0 0 9px var(--glow-strong));
+}
+
 .radar {
   --line-length: 180px; /* 👈 tweak this to grow/shrink the crosshair */
   --diag-length: 128px;

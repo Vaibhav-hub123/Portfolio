@@ -1,54 +1,102 @@
-let currentExpression = "neutral"; // set up the current expression of the robo 
+let currentExpression = "neutral";
 let blinking = false;
+let renderVersion = 0;
+let expressionTimer = null;
+let idleTimer = null;
 
+const expressions = new Set([
+  "neutral",
+  "happy",
+  "sad",
+  "shocked",
+  "sleepy",
+  "curious",
+  "thinking",
+  "confused",
+]);
 
-// adds the robo into the scene with a specific expression 
-async function setExpression(name) {
-  currentExpression = name;
-  const response = await fetch(`assets/robo/${name}.svg`);// fetch basically asks the browser for something in this case the name.svg
-  let svg = await response.text();// await so that it loads properly as it takes times 
-  svg = svg.replace(/<\?xml[^>]*\?>/, "");// remove this stuff basically for html use 
-  document.getElementById("robotAssistant").innerHTML = svg;// add the svg in the html 
+async function renderExpression(name) {
+  const version = ++renderVersion;
+  const container = document.getElementById("robotAssistant");
+  if (!container) return;
+
+  try {
+    const response = await fetch(`assets/robo/${name}.svg`);
+    if (!response.ok) throw new Error(`Could not load robo expression: ${name}`);
+
+    let svg = await response.text();
+    svg = svg.replace(/<\?xml[^>]*\?>/, "");
+    if (version !== renderVersion) return;
+
+    container.style.opacity = "0";
+    await new Promise(requestAnimationFrame);
+    if (version !== renderVersion) return;
+
+    container.innerHTML = svg;
+    requestAnimationFrame(() => {
+      if (version === renderVersion) container.style.opacity = "1";
+    });
+  } catch (error) {
+    console.error(error);
+  }
 }
 
+export function setRoboExpression(name, { resetAfter = 0, resetTo = "neutral" } = {}) {
+  if (!expressions.has(name)) return;
 
-//make the robo blink sometimes 
+  clearTimeout(expressionTimer);
+  currentExpression = name;
+  renderExpression(name);
+
+  if (resetAfter > 0) {
+    expressionTimer = setTimeout(() => {
+      if (currentExpression === name) setRoboExpression(resetTo);
+    }, resetAfter);
+  }
+}
+
 async function blink() {
   if (blinking) return;
   blinking = true;
-  const previous = currentExpression; // which expression will the blinking work with like there can be happy blink sad blick etc
-  await setExpression(previous + "Blink");//just naming convention 
-  await new Promise((resolve) => setTimeout(resolve, 100));//wait 100ms
-  await setExpression(previous);// go back to expression without blinking 
-  blinking = false;
+  const expression = currentExpression;
+
+  try {
+    await renderExpression(`${expression}Blink`);
+    await new Promise((resolve) => setTimeout(resolve, 110));
+    if (expression === currentExpression) await renderExpression(expression);
+  } finally {
+    blinking = false;
+  }
 }
 
-//makes the infinite blinking loop
-function startBlinking() {
-    // inside this function as doesnt require any where else only this place this functions schedules blinks lol as it states 
-    function scheduleBlink() {
-        const delay = 3000 + Math.random() * 4000;//random delay
-        setTimeout(async () => {
-        await blink();// robo blicks once 
-        //random event
-        if (Math.random() < 0.25) {
-            await new Promise((r) => setTimeout(r, 120));
-            await blink();// he blinks again lol 
-        }
-        scheduleBlink();
-        }, delay);// call the function with a delay everytime which is generated randomly 
+function scheduleBlink() {
+  const delay = 3000 + Math.random() * 4000;
+  setTimeout(async () => {
+    await blink();
+    if (Math.random() < 0.25) {
+      await new Promise((resolve) => setTimeout(resolve, 120));
+      await blink();
     }
     scheduleBlink();
-    // call the function once 
+  }, delay);
 }
 
-
-//export it into script.js for the starting of this function 
-export async function initRobo()  {
-  await setExpression("neutral");
-  startBlinking();
+function resetIdleTimer() {
+  clearTimeout(idleTimer);
+  if (currentExpression === "sleepy") setRoboExpression("neutral");
+  idleTimer = setTimeout(() => setRoboExpression("sleepy"), 18000);
 }
 
+export function initRobo() {
+  setRoboExpression("neutral");
+  scheduleBlink();
+  ["pointerdown", "pointermove", "keydown", "wheel"].forEach((eventName) => {
+    window.addEventListener(eventName, resetIdleTimer, { passive: true });
+  });
+  resetIdleTimer();
+}
+
+// Keep the original helper available for existing callers.
 export async function sethappy() {
-  await setExpression("happy");
+  setRoboExpression("happy");
 }

@@ -1,0 +1,49 @@
+.skills-panel {
+  --sk-primary: var(--primary, #00d8ff);
+  --sk-secondary: var(--secondary, #0077ff);
+  position: relative;
+  overflow: hidden;
+  padding: clamp(24px, 4vw, 48px);
+  color: #e8f4ff;
+  background:
+    radial-gradient(55% 70% at 100% 0%, color-mix(in srgb, var(--sk-secondary) 23%, transparent), transparent 72%),
+    radial-gradient(45% 70% at 0% 100%, color-mix(in srgb, var(--sk-primary) 12%, transparent), transparent 75%),
+    #030a17;
+  font: 400 0.9rem/1.65 "IBM Plex Mono", Consolas, monospace;
+}
+
+.skills-panel * { box-sizing: border-box; }
+.skills-head { max-width: 720px; }
+.skills-kicker, .skills-index, .skills-foot { color: color-mix(in srgb, var(--sk-primary) 76%, white); letter-spacing: 0.14em; font-size: 0.7rem; }
+.skills-head h1 { margin: 12px 0; font: 600 clamp(1.8rem, 4vw, 3rem)/1.15 "Orbitron", system-ui, sans-serif; }
+.skills-head h1 span { color: var(--sk-primary); }
+.skills-lede { color: rgba(212, 231, 248, 0.72); }
+
+.skills-map {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin: 34px 0;
+  padding: 15px 18px;
+  border-block: 1px solid color-mix(in srgb, var(--sk-primary) 40%, transparent);
+  background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--sk-primary) 9%, transparent), transparent);
+  color: #a9edff;
+  font-size: clamp(0.55rem, 1.1vw, 0.75rem);
+  white-space: nowrap;
+  text-shadow: 0 0 12px color-mix(in srgb, var(--sk-primary) 78%, transparent);
+}
+.skills-map i { width: 5px; height: 5px; flex: 0 0 5px; border-radius: 50%; background: var(--sk-primary); box-shadow: 0 0 10px var(--sk-primary); }
+
+.skills-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+.skills-grid article { min-height: 136px; padding: 18px; border: 1px solid color-mix(in srgb, var(--sk-primary) 24%, transparent); background: rgba(8, 22, 42, 0.72); }
+.skills-grid h2 { margin: 16px 0 6px; font: 500 1rem/1.3 "Orbitron", system-ui, sans-serif; }
+.skills-grid p { color: rgba(212, 231, 248, 0.75); font-size: 0.8rem; }
+.skills-foot { display: flex; align-items: center; gap: 9px; margin-top: 24px; }
+.skills-status { width: 7px; height: 7px; border-radius: 50%; background: #62eac1; box-shadow: 0 0 10px #62eac1; }
+
+@media (max-width: 700px) {
+  .skills-map { overflow: hidden; justify-content: flex-start; }
+  .skills-grid { grid-template-columns: 1fr; }
+  .skills-grid article { min-height: auto; }
+}

@@ -81,6 +81,62 @@ export function createNebulas(scene) {
       rotation: -0.8,
       opacity: 0.42,
     },
+    // Softer clouds spread across the opposite side and upper sky. The staggered
+    // positions and scales layer together without creating one solid color sheet.
+    {
+      texture: 1,
+      x: -2100,
+      y: 450,
+      z: 1650,
+      size: 3100,
+      rotation: -0.55,
+      opacity: 0.14,
+    },
+    {
+      texture: 0,
+      x: -1650,
+      y: 1350,
+      z: 2350,
+      size: 2200,
+      rotation: 0.2,
+      opacity: 0.09,
+    },
+    {
+      texture: 2,
+      x: 350,
+      y: -1550,
+      z: 2200,
+      size: 2600,
+      rotation: 1.0,
+      opacity: 0.1,
+    },
+    {
+      texture: 0,
+      x: -2900,
+      y: -250,
+      z: -500,
+      size: 2700,
+      rotation: 0.75,
+      opacity: 0.12,
+    },
+    {
+      texture: 1,
+      x: 900,
+      y: 2100,
+      z: -900,
+      size: 3000,
+      rotation: -1.1,
+      opacity: 0.09,
+    },
+    {
+      texture: 2,
+      x: -600,
+      y: 450,
+      z: 1450,
+      size: 1600,
+      rotation: 0.4,
+      opacity: 0.07,
+    },
   ];
 
   // Load textures

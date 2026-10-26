@@ -1,6 +1,7 @@
 import * as THREE from "three";
 import { showHUD, hideHUD, playHUDAnimation } from "../Detector/Detector.js";
 import { openInfoPanel, hideInfoPanel } from "../TAb_UI/logic/infoPanel.js";
+import { setRoboExpression } from "../robo/robo.js";
 
 
 const raycaster = new THREE.Raycaster(); // A Raycaster shoots an invisible line from the camera into the world.
@@ -48,8 +49,9 @@ const lookMatrix = new THREE.Matrix4(); // A Matrix4 stores transformations.x
 let navLookTarget = null;
 let navLooking = false;
 
-const travelTarget = new THREE.Vector3(); // where to travel a temporary variable
 const travelDirection = new THREE.Vector3();// distance between planet and camera (normalized)
+const focusDirection = new THREE.Vector3();
+const focusDestination = new THREE.Vector3();
 
 let waitStart = 0;
 
@@ -118,6 +120,11 @@ function startRotateTo(camera, planet) {
   lookMatrix.lookAt(camera.position, targetPos, camera.up);// creates an matrix so that it can create matamatical rotation towwards the planet (learn the math behind it)
   focusTarget = new THREE.Quaternion().setFromRotationMatrix(lookMatrix); // converting that matrix into quaternion 
 
+  focusDirection.subVectors(targetPos, camera.position).normalize();
+  focusDestination
+    .copy(targetPos)
+    .addScaledVector(focusDirection, -(planet.userData?.approachDistance ?? TRAVEL_STOP_DISTANCE));
+
   flightState = STATE.ROTATING;// tells the state machine to update state so like it tells it to start to rotate
 }
 
@@ -125,7 +132,10 @@ function startRotateTo(camera, planet) {
 //This keeps the camera behavior predictable and prevents conflicting movements. No matter when the user clicks, there's only ever one active camera sequence, and any new destination is either started immediately or queued until it's safe to begin.
 export function goToPlanet(camera, name) {
   const planet = getPlanetByName(name); // gets the planet we need to travel to 
-  if (!planet) return; // stops the function if not found any planets 
+  if (!planet) {
+    setRoboExpression("confused", { resetAfter: 1400 });
+    return;
+  }
 
   navLooking = false;// stops the navigator bar looking for priority to travel then to look lol
 
@@ -147,6 +157,7 @@ export function goToPlanet(camera, name) {
 
   activePlanet = planet; // the destination 
   currentPlanet = null; // detector helper to close it 
+  setRoboExpression("shocked", { resetAfter: 650, resetTo: "thinking" });
   hideHUD();// make the detector disappear
   startRotateTo(camera, planet);// begins the movement 
 }
@@ -159,6 +170,7 @@ export function lookAtOrigin(camera) {
     return;
   }// dont do anything if already travelling 
   navLookTarget = ORIGIN_QUATERNION.clone();  // clone because origin_quaternion is like a pointer so if we jsut write equal to it will just make them both point at the same thing 
+  setRoboExpression("neutral");
   navLooking = true;
 }
 
@@ -182,12 +194,16 @@ export function lookAtPlanet(camera, name) {
   if (flightState !== STATE.IDLE) return;// if already traveling dont do anything
 
   const planet = getPlanetByName(name);
-  if (!planet) return;
+  if (!planet) {
+    setRoboExpression("confused", { resetAfter: 1400 });
+    return;
+  }
 
   planet.getWorldPosition(targetPos);
   targetPos.y = camera.position.y; // keep the camera level with the planet, don't look up or down
   lookMatrix.lookAt(camera.position, targetPos, camera.up);
   navLookTarget = new THREE.Quaternion().setFromRotationMatrix(lookMatrix);
+  setRoboExpression("curious");
   navLooking = true;
 }
 export function isNavLooking() {
@@ -234,8 +250,7 @@ export function updateInteractions(camera) {
       // now we calculate it again ,and the previous wait start is subtracted from it which tell us how much time has passed from the previous time an as it runs everyframe it calculates time that way :)
       // if the time passed is more that the pause time currently 700 ms then start travelling 
       if (performance.now() - waitStart >= LOOK_PAUSE_TIME) {
-        activePlanet.getWorldPosition(travelTarget); // gets the position of the planet we need to travel too
-        travelDirection.subVectors(travelTarget, camera.position).normalize(); // subvectors give the distance and then after normalising it example (10,0,0) -> (1,0,0) so this is the direcction in which we need to travel 
+        travelDirection.subVectors(focusDestination, camera.position).normalize();
         flightState = STATE.TRAVELLING;// change the state to travel
       }
       break;
@@ -243,16 +258,17 @@ export function updateInteractions(camera) {
 
     //travel toward the planet 
     case STATE.TRAVELLING: {
-      activePlanet.getWorldPosition(travelTarget);// get our destination planet 
-      const distance = camera.position.distanceTo(travelTarget); //distance from the camera and planet 
+      const distance = camera.position.distanceTo(focusDestination);
 
       //if we are far from our distination add some value in that direction in the position of our camera 
-      if (distance > TRAVEL_STOP_DISTANCE) {
+      if (distance > TRAVEL_SPEED) {
         camera.position.addScaledVector(travelDirection, TRAVEL_SPEED); // pretty self explainatory
       } 
       //if we reach near the destination or close to it update the state to focus and open the infopanel
       else {
+        camera.position.copy(focusDestination);
         flightState = STATE.FOCUSED; // update the state
+        setRoboExpression("happy");
         openInfoPanel(activePlanet.userData, () => returnToOrigin(camera));// opens infoPanel
       }
       break;
@@ -309,12 +325,14 @@ export function updateInteractions(camera) {
       //if its a new planet only then play the animation no need to repeat the animation for the planet 
       if (currentPlanet !== planet) {
         currentPlanet = planet;
+        setRoboExpression("curious");
         playHUDAnimation(planet);
       }
       showHUD(currentPlanet, camera);
     } 
     //if state is not idle hide the detector
     else {
+      if (currentPlanet) setRoboExpression("neutral");
       currentPlanet = null;
       hideHUD();
     }
@@ -325,6 +343,7 @@ export function updateInteractions(camera) {
 //updates the state for return when the infotab closes in the infotab.js
 function startReturn() {
   flightState = STATE.RETURNING;
+  setRoboExpression("sad", { resetAfter: 850, resetTo: "neutral" });
   hideHUD();
   currentPlanet = null;
 }
