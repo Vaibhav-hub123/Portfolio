@@ -311,8 +311,47 @@
   /* outline: 2px solid lime; */
 }
 
+#roboGreeting {
+  position: absolute;
+  left: 170px;
+  bottom: 112px;
+  max-width: 280px;
+  padding: 12px 16px;
+  border: 1px solid hsl(from var(--primary) h s l / 0.65);
+  border-radius: 12px 12px 12px 2px;
+  background: rgba(3, 12, 26, 0.88);
+  color: #e8fbff;
+  font: 500 13px/1.55 Orbitron, sans-serif;
+  letter-spacing: 0.3px;
+  box-shadow: 0 0 16px hsl(from var(--primary) h s l / 0.24);
+  opacity: 0;
+  transform: translateY(8px) scale(0.98);
+  transform-origin: bottom left;
+  pointer-events: none;
+  transition: opacity 250ms ease, transform 250ms ease;
+  z-index: 10000;
+}
+
+#roboGreeting.visible {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+@media (max-width: 600px) {
+  #roboGreeting {
+    left: 135px;
+    bottom: 96px;
+    max-width: min(220px, calc(100vw - 180px));
+    font-size: 11px;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   #robotAssistant {
+    transition: none;
+  }
+
+  #roboGreeting {
     transition: none;
   }
 }

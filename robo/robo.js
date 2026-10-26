@@ -88,7 +88,12 @@ function resetIdleTimer() {
 }
 
 export function initRobo() {
-  setRoboExpression("neutral");
+  setRoboExpression("happy", { resetAfter: 4500 });
+  const greeting = document.getElementById("roboGreeting");
+  if (greeting) {
+    greeting.classList.add("visible");
+    window.setTimeout(() => greeting.classList.remove("visible"), 8000);
+  }
   scheduleBlink();
   ["pointerdown", "pointermove", "keydown", "wheel"].forEach((eventName) => {
     window.addEventListener(eventName, resetIdleTimer, { passive: true });
